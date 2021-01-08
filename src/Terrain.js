@@ -5,7 +5,7 @@ class Terrain {
         let pl = _pSimulationInstance.config.engine.plotter;
         this.size = new Vector(pl.scale.x, pl.scale.y);
 
-        this.precision = 100;
+        this.precision = 300;
     }
 
     generate() {
@@ -18,7 +18,7 @@ class Terrain {
     }
 
     terrainHeight(index) {
-        let noise_scalar = 6;
+        let noise_scalar = this.precision * 0.06;
         let noiseHeightRange = this.size.y / 6;
 
         return noiseHeightRange * noise(index / noise_scalar);
@@ -37,10 +37,10 @@ class Terrain {
                     .vertex(this.points[i].x, this.points[i].y);
 
                 // Terrain Surface
-                drawer
-                    .fill(255, 255, 255, 0.2)
-                    .stroke(255, 255, 255, 0.8)
-                    .circle(this.points[i].x, this.points[i].y, 5, true);
+                // drawer
+                //     .fill(255, 255, 255, 0.2)
+                //     .stroke(255, 255, 255, 0.8)
+                //     .circle(this.points[i].x, this.points[i].y, 5, true);
             }
             drawer.vertex(this.size.x, -0.6*this.size.y);
         drawer.endShape(CLOSE);
