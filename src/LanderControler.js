@@ -1,4 +1,4 @@
-class LanderProgram {
+class LanderControler {
     constructor() {
 
     }
@@ -8,6 +8,6 @@ class LanderProgram {
     }
 
     draw(drawer) {
-        
+
     }
 }
