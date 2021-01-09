@@ -8,11 +8,12 @@ function runSimulator(simulator) {
 				y : 100
 			};
 			engineConf.plotter.scale.y = height / _pSimulationInstance.plotter.computeForXYZ(1, 1, 0, false).x;
-			engineConf.plotter.offset = {
-				x : 0,
-				y : 0.85 * engineConf.plotter.scale.y / 2
-			};
+			// engineConf.plotter.offset = {
+			// 	x : 0,
+			// 	y : 0.85 * engineConf.plotter.scale.y / 2
+			// };
 		})
-		.addObjects(Simulator)
+		// .addObjects(Simulator)
+		.addObjects(PerceptronTest)
 	;
 }
