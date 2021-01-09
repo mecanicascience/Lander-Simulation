@@ -5,18 +5,20 @@ class Lander {
         this.engine    = new LanderEngine();
         this.controler = new LanderControler(this.engine);
 
+        this.collided = false;
         this.DEBUG = false;
     }
 
-    instanciate(r0, v0) {
+    instanciate(r0, v0, thrustAngle0, thrustAmount0) {
         this.m = 5;
 
-        this.pos = new Vector(r0.x, r0.y); // -70 70 for debug
+        this.pos = new Vector(r0.x, r0.y);
         this.vel = new Vector(v0.x, v0.y);
         this.acc = new Vector(   0,    0);
 
-        this.forces = [];
+        this.engine.instanciate(thrustAngle0, thrustAmount0);
 
+        this.forces = [];
         this.rigidbody = [
             new Vector(-1.3, 5),
             new Vector( 1.3, 5),
@@ -26,6 +28,9 @@ class Lander {
     }
 
     update(dt) {
+        if (this.collided)
+            return;
+
         // Using explicit Euler method
         this.pos.add((this.vel.copy()).mult(dt));
         this.vel.add((this.acc.copy()).mult(dt));
@@ -44,10 +49,8 @@ class Lander {
 
 
         // Computes collision
-        if (this.intersectWithBoundaries()) {
-            console.log("COLLIDE!");
-            noLoop();
-        }
+        if (this.intersectWithBoundaries())
+            this.collided = true;
     }
 
     calculateForces() {
@@ -69,6 +72,17 @@ class Lander {
             sin : Math.sin(this.engine.thrustAngle),
         };
 
+        // Sides Walls intersection
+        for (let j = 0; j < this.rigidbody.length; j++) {
+            let pos = {
+                x : angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
+                y : angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
+            };
+            if (pos.x < -100 || pos.x > 100)
+                return true;
+        }
+
+        // Terrain intersection
         for (let i = 0; i < this.terrain.points.length - 1; i++) {
             for (let j = 0; j < this.rigidbody.length; j++) {
                 let pos = {

@@ -5,6 +5,7 @@ Auto-lands an object to a specific point on the surface.
 This project aims to let an AI land a vessel on a simulated 2D terrain with a simulated atmosphere, with wind and atmospheric disturbances, while targeting a specific point and minimizing vessel's fuel.
 
 ## References
+ - The awesome book "The Nature of Code" by Daniel Shiffman "[The Nature Of Code](https://natureofcode.com/)"
  - G-Fold algorithm : how to land with a precision < 100 m on an other planet. G-Fold auto-computes the shortest way in terms of fuel to land on a specific target, based on the current position and velocity of the vessel (witch are unknown due to wind, and atmospheric instabilities) "[G-FOLD: A Real-Time Implementable Fuel Optimal Large Divert Guidance Algorithm for Planetary PinpointLanding](https://www.lpi.usra.edu/meetings/marsconcepts2012/pdf/4193.pdf)"
  - Landing fuel optimization for engines : "[Meditch, J. (1964). On the problem of optimal thrust programming for a lunar soft landing. IEEE Transactions on Automatic Control, 9(4), 477–484. doi:10.1109/tac.1964.1105758](https://ieeexplore.ieee.org/document/1105758)"
  - Convex programming algorithm for the numerical solution of the minimum fuel powered descent guidance problem associated with Mars pinpoint landing : "[Convex Programming Approach to Powered Descent Guidance for Mars Landing](https://arc.aiaa.org/doi/10.2514/1.27553)"
