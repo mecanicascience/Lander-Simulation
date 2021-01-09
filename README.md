@@ -18,5 +18,8 @@ G-FOLD-Python](https://github.com/jonnyhyman/G-FOLD-Python)"
  1. Main physics Simulation
  1. Terrain Generation
  1. Atmosphere simulation
+ 1. Wind simulation
+ 1. Collision detection
  1. Drag forces simulation
  1. Auto-lander (2 methods : G-Fold and Deep Reinforcement Learning)
+ 1. Implementation in KSP
