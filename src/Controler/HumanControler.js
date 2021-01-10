@@ -1,7 +1,6 @@
 class HumanControler extends Controler {
     constructor() {
         super();
-        console.log("HUMAN CONTROLER");
     }
 
     initialize(lander) {

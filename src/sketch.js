@@ -8,16 +8,15 @@ function launchSimulation() {
 
 	// Last controler is an Human
 	controlers.push(HumanControler);
-	controlersDatas.push(['test']);
+	controlersDatas.push([ ]);
 
 	sim.newPopulation(populationSize, controlers, controlersDatas);
-	// sim.loadPopulation(_str_);
+	// sim.loadPopulation(_string_);
 
 
 	sim.displays('vessel');
 	// sim.displays('controler', 0);
 	sim.start();
-
 
 	// Save population to console to a String
 	// let sim = sim.savePopulation();

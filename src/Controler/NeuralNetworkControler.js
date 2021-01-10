@@ -24,8 +24,9 @@ class NeuralNetworkControler extends Controler {
     }
 
 
-    update(dt) {
 
+    update(dt) {
+        
     }
 
     draw(drawer) {
