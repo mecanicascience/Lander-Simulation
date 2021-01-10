@@ -1,16 +1,23 @@
 class LanderEngine {
+    /** The engine of each lander */
     constructor() {
         this.thrustAmount = 0; // 9.8*5;
         this.thrustAngle  = 0; // in rad
-        
+
         this.deltaFlame   = 0;
     }
 
+    /**
+    * Creates a new engine
+    * @param thrustAngle The default thrust angle
+    * @param thrustAmount The default thrust amount
+    */
     initialize(thrustAngle, thrustAmount) {
         this.thrustAngle  = thrustAngle;
         this.thrustAmount = thrustAmount;
     }
 
+    /** @return the thrust as a force based on its angle and magnitude */
     getThrustForce() {
         let thrust = new Vector(0, this.thrustAmount);
 
@@ -22,15 +29,24 @@ class LanderEngine {
         );
     }
 
+    /**
+    * Rotate the engine
+    * @param dTheta The angle of rotation (in radians)
+    */
     rotate(dTheta) {
         this.thrustAngle += dTheta;
     }
 
+    /**
+    * Adds thrust to the engine
+    * @param dThrust The delta of thrust
+    */
     thrust(dThrust) {
         this.thrustAmount += dThrust;
     }
 
 
+    /** Draws the engine and its flame */
     draw(drawer) {
         this.deltaFlame += 0.1;
         let flameSize = 2*Math.sqrt(this.thrustAmount / 2);

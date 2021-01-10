@@ -1,4 +1,5 @@
 class Simulator {
+    /** The main controler of the simulation */
     constructor() {
         this.pause = true;
 
@@ -9,11 +10,13 @@ class Simulator {
         this.displayType = {};
     }
 
+    /** Updated simulation */
     update(dt) {
         for (let i = 0; i < this.landers.length; i++)
              this.landers[i].update(dt);
     }
 
+    /** Draws every object to the screen */
     draw(drawer) {
         if (this.pause)
             return;
@@ -29,22 +32,29 @@ class Simulator {
         }
     }
 
-    start() {
-        this.pause = false;
-    }
-    pause() {
-        this.pause = true;
-    }
+    /** Starts the simulation */
+    start() {this.pause = false; }
+    /** Pause the simulation */
+    pause() { this.pause = true; }
 
 
-
+    /**
+    * Changes the display mode
+    * @param type Type of the display ('vessel' or 'controler')
+    * @param id If type is 'controler', the id of the controler to be shown
+    */
     displays(type, id = -1) {
-        this.displayType = { type : type, id : id }; // type = 'vessel' or 'brain'
+        this.displayType = { type : type, id : id };
     }
 
 
 
-    /** Creates a Random population of Landers */
+    /**
+    * Creates a Random population of Landers
+    * @param populationSize Number of landers to be created
+    * @param controlersClass An array of each controler of each vessel
+    * @param controlersArgs An array for each lander of arrays of parameters
+    */
     newPopulation(populationSize, controlersClass, controlersArgs) {
         this.landers = [];
 
@@ -67,7 +77,10 @@ class Simulator {
         });
     }
 
-    /** Loads a population of Neural Networks from JSON string */
+    /**
+    * Loads a population of Neural Networks from JSON string
+    * @param pop The population as a String
+    */
     loadPopulation(pop) {
         this.landers = [];
 

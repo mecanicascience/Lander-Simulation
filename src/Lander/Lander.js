@@ -1,13 +1,25 @@
 class Lander {
+    /**
+    * Creates a new Lander
+    * @param terrain The reference of the terrain
+    * @param controler The Lander controler
+    */
     constructor(terrain, controler) {
         this.terrain = terrain;
         this.engine    = new LanderEngine();
         this.controler = controler;
 
         this.collided = false;
-        this.DEBUG = false;
+        this.DEBUG = true;
     }
 
+    /**
+    * Initialize the Lander parameters
+    * @param r0 Initial position
+    * @param v0 Initial position
+    * @param thrustAngle0  Initial thrust angle
+    * @param thrustAmount0 Initial thrust amount
+    */
     initialize(r0, v0, thrustAngle0, thrustAmount0) {
         this.m = 5;
         this.r0 = r0;
@@ -32,6 +44,10 @@ class Lander {
         this.controler.initialize(this);
     }
 
+    /**
+    * Initialize the lander from previous JSON datas
+    * @param d The JSON datas of the Lander
+    */
     initializeFromJSON(d) {
         this.initialize(
             new Vector(d.r0.x, d.r0.y),
@@ -44,6 +60,7 @@ class Lander {
 
 
 
+    /** Updates the lander */
     update(dt) {
         if (this.collided)
             return;
@@ -69,6 +86,9 @@ class Lander {
     }
 
 
+    /**
+    * Draws the lander, optionnaly its controler, and optionnaly its debug parameters
+    */
     draw(drawer, type) {
         if (type == 'controler') {
             this.controler.draw(drawer);
@@ -85,6 +105,7 @@ class Lander {
 
 
 
+    /** @return the total forces exerced on the Lander */
     calculateForces() {
         let forces = [];
 
@@ -101,6 +122,10 @@ class Lander {
 
 
 
+    /**
+    * Check if there is a boundary or terrain collision
+    * @return true If it collided, false else
+    */
     intersectWithBoundaries() {
         let angle = {
             cos : Math.cos(this.engine.thrustAngle),
@@ -141,6 +166,9 @@ class Lander {
 
 
 
+    /**
+    * Draws the body of the Lander and its engine
+    */
     drawBody(drawer) {
         drawer
             .stroke(255, 255, 255, 0.7)
@@ -165,6 +193,11 @@ class Lander {
         drawer.pop();
     }
 
+
+    /**
+    * Draw the debug graphics of the Lander (forces, rigidbody,
+    * and projection on the terrain surface)
+    */
     drawDebug(drawer) {
         // Draw forces
         for (let i = 0; i < this.forces.length; i++)
@@ -225,6 +258,13 @@ class Lander {
 
 
 
+    /**
+    * Check if the point is under the line that connects two points
+    * @param mx Checking m point X coordinate
+    * @param my Checking m point Y coordinate
+    * @param leftPoint A Vector for the left point of the line coordinates
+    * @param rightPoint A Vector for the right point of the line coordinates
+    */
     isUnder(mx, my, leftPoint, rightPoint) {
         if (mx < leftPoint.x || mx > rightPoint.x) // between the two x positions
             return false;
@@ -232,6 +272,8 @@ class Lander {
             return true;
     }
 
+
+    /** @return A string representation of the lander, its controler and engine */
     stringify() {
         return JSON.stringify({
             m : this.m,

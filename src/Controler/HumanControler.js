@@ -1,12 +1,18 @@
 class HumanControler extends Controler {
+    /** For players landers controlled with keyboard */
     constructor() {
         super();
     }
 
+    /**
+    * Initialize HumanControler
+    * @param lander The attached lander
+    */
     initialize(lander) {
         this.lander = lander;
     }
 
+    /** Update vessel thrust based on keys pressed */
     update(dt) {
         let omega = 3;
         let omethrust = 30;

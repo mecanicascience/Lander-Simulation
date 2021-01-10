@@ -1,4 +1,5 @@
 class Terrain {
+    /** Class of the Terrain constructor */
     constructor() {
         this.points = [];
 
@@ -19,6 +20,7 @@ class Terrain {
         }
     }
 
+    /** Generate a new terrain */
     generate() {
         for (let i = 0; i < this.precision; i++) {
             this.points.push(new Vector(
@@ -28,6 +30,7 @@ class Terrain {
         }
     }
 
+    /** @return the height of each index */
     terrainHeight(index) {
         let noise_scalar = this.precision * 0.12;
         let noiseHeightRange = this.size.y / 6;
@@ -36,7 +39,7 @@ class Terrain {
     }
 
 
-
+    /** Draws the terrain */
     draw(drawer) {
         this.noiseVal += 0.01;
 
@@ -57,7 +60,7 @@ class Terrain {
                     .stroke(255, 255, 255, 0.5)
                     .vertex(this.points[i].x, this.points[i].y);
 
-                // Terrain Surface
+                // Terrain Surface Ellipses
                 // drawer
                 //     .fill(255, 255, 255, 0.2)
                 //     .stroke(255, 255, 255, 0.8)

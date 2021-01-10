@@ -4,7 +4,7 @@ let sim = null;
 function launchSimulation() {
 	let populationSize  = 10;
 	let controlers      = Array(populationSize - 1).fill(NeuralNetworkControler);
-	let controlersDatas = Array(populationSize - 1).fill([20, 20, 20]);
+	let controlersDatas = Array(populationSize - 1).fill([ 20 ]);
 
 	// Last controler is an Human
 	controlers.push(HumanControler);
@@ -21,6 +21,8 @@ function launchSimulation() {
 	// Save population to console to a String
 	// let sim = sim.savePopulation();
 }
+
+
 
 function runSimulator(simulator) {
 	simulator
