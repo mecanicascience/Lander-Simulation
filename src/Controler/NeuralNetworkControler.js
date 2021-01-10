@@ -1,5 +1,6 @@
-class LanderBrain {
+class NeuralNetworkControler extends Controler {
     constructor(input_nodes, hidden_nodes, output_nodes) {
+        super();
         this.lander = null;
 
         this.input_nodes  = input_nodes;
@@ -15,12 +16,13 @@ class LanderBrain {
 
     initialize(lander, neuralNetworkMode = 'random', ...neuralNetworkArgs) {
         this.lander = lander;
-        this.nn.initialize(neuralNetworkMode);
+        this.nn.initialize(neuralNetworkMode, ...neuralNetworkArgs);
     }
 
-    initializeFromJSON(data) {
-        this.nn.initialize('json', data.neural_network);
+    initializeFromJSON(lander, data) {
+        this.nn.initialize(lander, 'json', data.neural_network);
     }
+
 
     update(dt) {
 

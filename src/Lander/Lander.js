@@ -1,10 +1,8 @@
 class Lander {
-    constructor(terrain, brain) {
+    constructor(terrain, controler) {
         this.terrain = terrain;
-
         this.engine    = new LanderEngine();
-        this.controler = new LanderControler(this.engine);
-        this.brain     = brain;
+        this.controler = controler;
 
         this.collided = false;
         this.DEBUG = false;
@@ -31,7 +29,7 @@ class Lander {
             new Vector(-1.3, -2.2)
         ];
 
-        this.brain.initialize(this);
+        this.controler.initialize(this);
     }
 
     initializeFromJSON(d) {
@@ -41,7 +39,7 @@ class Lander {
             d.thrustAngle0,
             d.thrustAmount0
         );
-        this.brain.initializeFromJSON(d.brain);
+        this.controler.initializeFromJSON(this, d.controler);
     }
 
 
@@ -55,27 +53,25 @@ class Lander {
         this.vel.add((this.acc.copy()).mult(dt));
         this.acc.set(0, 0);
 
-        // Updates vessel controler
+        // Call the controller
         this.controler.update(dt);
 
-        // Computes new acceleration
+        // Computes new acceleration by forces
         this.forces = this.calculateForces();
-
         let netForces = new Vector();
         for (let i = 0; i < this.forces.length; i++)
             netForces.add(this.forces[i]);
         this.acc.add(netForces.div(this.m));
 
-
-        // Computes collision
+        // Computes and react to collisions
         if (this.intersectWithBoundaries())
             this.collided = true;
     }
 
 
     draw(drawer, type) {
-        if (type == 'brain') {
-            this.brain.draw(drawer);
+        if (type == 'controler') {
+            this.controler.draw(drawer);
             return;
         }
 
@@ -243,7 +239,8 @@ class Lander {
             v0 : this.v0,
             thrustAngle0  : this.thrustAngle0,
             thrustAmount0 : this.thrustAmount0,
-            brain : this.brain.stringify()
+            controlerName : this.controler.constructor.name,
+            controler : this.controler.stringify()
         });
     }
 }
