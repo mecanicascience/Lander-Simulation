@@ -5,6 +5,13 @@ class Matrix {
     * @param cols Columns number
     */
     constructor(rows, cols) {
+        if (rows instanceof Array) {
+            this.rows = rows.length;
+            this.cols = rows[0].length;
+            this.datas = rows;
+            return;
+        }
+
         this.rows = rows;
         this.cols = cols;
 
@@ -70,5 +77,17 @@ class Matrix {
     log() {
         console.table(this.datas);
         return this;
+    }
+
+    /** @return a copy of the Matrix */
+    copy() {
+        let m = new Matrix(this.rows, this.cols);
+        m.datas = this.datas;
+        return m;
+    }
+
+    /** @return a JSON string representation of the Matrix */
+    stringify() {
+        return JSON.stringify(this.datas);
     }
 }

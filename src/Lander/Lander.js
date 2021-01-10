@@ -1,22 +1,27 @@
 class Lander {
-    constructor(terrain) {
+    constructor(terrain, brain) {
         this.terrain = terrain;
 
         this.engine    = new LanderEngine();
         this.controler = new LanderControler(this.engine);
+        this.brain     = brain;
 
         this.collided = false;
         this.DEBUG = false;
     }
 
-    instanciate(r0, v0, thrustAngle0, thrustAmount0) {
+    initialize(r0, v0, thrustAngle0, thrustAmount0) {
         this.m = 5;
+        this.r0 = r0;
+        this.v0 = v0;
+        this.thrustAngle0 = thrustAngle0;
+        this.thrustAmount0 = thrustAmount0;
 
         this.pos = new Vector(r0.x, r0.y);
         this.vel = new Vector(v0.x, v0.y);
         this.acc = new Vector(   0,    0);
 
-        this.engine.instanciate(thrustAngle0, thrustAmount0);
+        this.engine.initialize(thrustAngle0, thrustAmount0);
 
         this.forces = [];
         this.rigidbody = [
@@ -25,7 +30,21 @@ class Lander {
             new Vector( 1.3, -2.2),
             new Vector(-1.3, -2.2)
         ];
+
+        this.brain.initialize(this);
     }
+
+    initializeFromJSON(d) {
+        this.initialize(
+            new Vector(d.r0.x, d.r0.y),
+            new Vector(d.v0.x, d.v0.y),
+            d.thrustAngle0,
+            d.thrustAmount0
+        );
+        this.brain.initializeFromJSON(d.brain);
+    }
+
+
 
     update(dt) {
         if (this.collided)
@@ -53,6 +72,23 @@ class Lander {
             this.collided = true;
     }
 
+
+    draw(drawer, type) {
+        if (type == 'brain') {
+            this.brain.draw(drawer);
+            return;
+        }
+
+        this.drawBody(drawer);
+
+        if (this.DEBUG)
+            this.drawDebug(drawer);
+    }
+
+
+
+
+
     calculateForces() {
         let forces = [];
 
@@ -65,6 +101,9 @@ class Lander {
 
         return forces;
     }
+
+
+
 
     intersectWithBoundaries() {
         let angle = {
@@ -106,9 +145,7 @@ class Lander {
 
 
 
-
-
-    draw(drawer) {
+    drawBody(drawer) {
         drawer
             .stroke(255, 255, 255, 0.7)
             .fill  (255, 255, 255, 0.5)
@@ -130,9 +167,6 @@ class Lander {
                 // LanderEngine
                 this.engine.draw(drawer);
         drawer.pop();
-
-        if (this.DEBUG)
-            this.drawDebug(drawer);
     }
 
     drawDebug(drawer) {
@@ -200,5 +234,16 @@ class Lander {
             return false;
         if(my < mx*(rightPoint.y - leftPoint.y)/(rightPoint.x - leftPoint.x) + leftPoint.y) // under the line
             return true;
+    }
+
+    stringify() {
+        return JSON.stringify({
+            m : this.m,
+            r0 : this.r0,
+            v0 : this.v0,
+            thrustAngle0  : this.thrustAngle0,
+            thrustAmount0 : this.thrustAmount0,
+            brain : this.brain.stringify()
+        });
     }
 }

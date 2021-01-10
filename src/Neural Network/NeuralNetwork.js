@@ -22,10 +22,12 @@ class NeuralNetwork {
 
 
     /**
-    * @param mode The mode of initialization ('random' or 'datas')
+    * @param mode The mode of initialization ('random' / 'datas' / 'copy' / 'json')
     * @param args The arguments corresponding to the initialization
     *   If random mode, arg0 and arg1 are the min and max values of the coefficients
     *   If datas mode, arg0 = ih_weights, arg1 = ho_weights, arg2 = ih_bias, arg3 = ho_bias
+    *   If copy mode, arg0 = the Neural Network to copy
+    *   If json mode, arg0 = the JSON datas
     */
     initialize(mode, ...args) {
         if (mode == 'random') {
@@ -58,6 +60,24 @@ class NeuralNetwork {
                 max : Math.max(this.ih_weights.max(), this.ho_weights.max(), this.ih_bias.max(), this.ho_bias.max()),
                 min : Math.min(this.ih_weights.min(), this.ho_weights.min(), this.ih_bias.min(), this.ho_bias.min())
             };
+        }
+        else if (mode == 'copy') { // please use nn.copy() function directly
+            this.ih_weights = args[0].ih_weights.copy();
+            this.ho_weights = args[0].ho_weights.copy();
+
+            this.ih_bias = args[0].ih_bias.copy();
+            this.ho_bias = args[0].ho_bias.copy();
+
+            this.weights_datas = args[0].weights_datas;
+        }
+        else if (mode == 'json') {
+            this.ih_weights = new Matrix(JSON.parse(args[0].ih_weights));
+            this.ho_weights = new Matrix(JSON.parse(args[0].ho_weights));
+
+            this.ih_bias = new Matrix(JSON.parse(args[0].ih_bias));
+            this.ho_bias = new Matrix(JSON.parse(args[0].ho_bias));
+
+            this.weights_datas = args[0].weights_datas;
         }
     }
 
@@ -135,5 +155,31 @@ class NeuralNetwork {
         if (normalizedWeight > 0.5)
             return `rgba(0, ${Math.round(2*(normalizedWeight - 0.5)*255)}, 0, 1)`;
         return `rgba(${Math.round(2*normalizedWeight*255)}, 0, 0, 1)`;
+    }
+
+
+    /**
+    * @return a copy of this NeuralNetwork
+    */
+    copy() {
+        let nn = new NeuralNetwork(this.input_nodes, this.hidden_nodes, this.output_nodes);
+        nn.initialize('copy', this);
+        return nn;
+    }
+
+    /**
+    * @return a JSON copy of the object
+    */
+    stringify() {
+        return {
+            ih_weights : this.ih_weights.stringify(),
+            ho_weights : this.ho_weights.stringify(),
+            ih_bias    : this.ih_bias.stringify(),
+            ho_bias    : this.ho_bias.stringify(),
+            weights_datas : this.weights_datas,
+            input_nodes   : this.input_nodes,
+            hidden_nodes  : this.hidden_nodes,
+            output_nodes  : this.output_nodes
+        };
     }
 }

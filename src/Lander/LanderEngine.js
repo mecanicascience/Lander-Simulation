@@ -2,10 +2,11 @@ class LanderEngine {
     constructor() {
         this.thrustAmount = 0; // 9.8*5;
         this.thrustAngle  = 0; // in rad
+        
         this.deltaFlame   = 0;
     }
 
-    instanciate(thrustAngle, thrustAmount) {
+    initialize(thrustAngle, thrustAmount) {
         this.thrustAngle  = thrustAngle;
         this.thrustAmount = thrustAmount;
     }
