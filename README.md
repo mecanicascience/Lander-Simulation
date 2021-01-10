@@ -1,5 +1,6 @@
 # Lander Simulation
 Auto-lands an object to a specific point on the surface.
+See [the MecanicaScience website](https://simulations.mecanicascience.fr/2021/Lander-Simulation/) for a live demo.
 
 ## Description
 This project aims to let an AI land a vessel on a simulated 2D terrain with a simulated atmosphere, with wind and atmospheric disturbances, while targeting a specific point and minimizing vessel's fuel.
