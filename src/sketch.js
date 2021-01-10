@@ -14,6 +14,7 @@ function runSimulator(simulator) {
 			// };
 		})
 		// .addObjects(Simulator)
-		.addObjects(PerceptronTest)
+		// .addObjects(PerceptronTest)
+		.addObjects(NeuralNetworkTest)
 	;
 }
