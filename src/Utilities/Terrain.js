@@ -22,6 +22,7 @@ class Terrain {
 
     /** Generate a new terrain */
     generate() {
+        this.points = [];
         for (let i = 0; i < this.precision; i++) {
             this.points.push(new Vector(
                 2 * this.size.x / (this.precision - 1) * i - this.size.x,
@@ -35,15 +36,16 @@ class Terrain {
         let noise_scalar = this.precision * 0.12;
         let noiseHeightRange = this.size.y / 6;
 
-        return noiseHeightRange * noise(index / noise_scalar);
+        return noiseHeightRange * noise(Date.now() + index / noise_scalar);
     }
 
 
     /** @return an Array representation of this terrain as [x1, y1, ...] */
     describe() {
+        let scale = _pSimulationInstance.getEngineConfig().plotter.scale;
         let rep = [];
         for (let i = 0; i < this.points.length; i++)
-            rep.push(this.points[i].x, this.points[i].y);
+            rep.push(this.points[i].x / scale.x, this.points[i].y / scale.y);
         return rep;
     }
 

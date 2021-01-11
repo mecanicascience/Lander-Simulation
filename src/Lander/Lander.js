@@ -5,14 +5,14 @@ class Lander {
     * @param controler The Lander controler
     */
     constructor(terrain, controler) {
-        this.terrain = terrain;
+        this.terrain   = terrain;
         this.engine    = new LanderEngine();
         this.controler = controler;
 
         this.collided = false;
         this.DEBUG = false;
 
-        this.flyTime = 0;
+        this.points = 0;
     }
 
     /**
@@ -43,7 +43,7 @@ class Lander {
             new Vector(-1.3, -2.2)
         ];
 
-        this.flyTime = 0;
+        this.points = 0;
     }
 
     /**
@@ -85,7 +85,16 @@ class Lander {
         if (this.intersectWithBoundaries())
             this.collided = true;
 
-        this.flyTime += dt;
+        this.points += this.computePoints(dt);
+    }
+
+    computePoints(dt) {
+        let points = 0;
+
+        points += 1 * dt; // Time in flight
+        
+
+        return points;
     }
 
 

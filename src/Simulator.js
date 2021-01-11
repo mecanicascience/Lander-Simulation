@@ -50,6 +50,9 @@ class Simulator {
 
         // Go to next generation
         if (finished && this.simulationMode == 'neuralNetwork') {
+            // Generate a new Terrain
+            this.terrain.generate();
+
             // Generate new population
             let newPop = this.generateNextGeneration();
             this.landers = newPop;

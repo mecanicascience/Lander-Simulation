@@ -5,7 +5,7 @@ let initialConditions = [
 	-Math.PI * 0.2,      // initial engine angle
 	0                    // initial thrust amount
 ];
-let terrainPrecision = 3;
+let terrainPrecision = 5;
 
 function launchSimulation() {
 	let populationSize  = 50;

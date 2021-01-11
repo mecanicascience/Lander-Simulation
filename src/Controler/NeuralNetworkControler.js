@@ -9,7 +9,7 @@ class NeuralNetworkControler extends Controler {
         // Using ReLU activation function f(x) = max(0, x)
         let reLU_activationFunction    = x => x > 0 ? x : 0;
         let sigmoid_activationFunction = x => 1 / (1 + Math.exp(-x));
-        this.activationFunction = sigmoid_activationFunction;
+        this.activationFunction = reLU_activationFunction;
 
         this.mutationRate = 0.1;
         this.gaussianDistribution = {
@@ -19,12 +19,12 @@ class NeuralNetworkControler extends Controler {
 
         this.input_nodes  = 7 + simulator.terrain.describe().length;
         this.hidden_nodes = hidden_nodes;
-        this.output_nodes = 2;
+        this.output_nodes = 4;
 
         this.nodes_datas = [
-            { max : -100, min : -100 }, // input_nodes supposed max and min values
-            { max : 0, min :  0 },      // hidden_nodes supposed max and min values
-            { max : 0, min :  0 }       // output_nodes supposed max and min values
+            { max : 0, min : 0 }, // input_nodes supposed max and min values
+            { max : 0, min : 0 },      // hidden_nodes supposed max and min values
+            { max : 0, min : 0 }       // output_nodes supposed max and min values
         ];
         this.lander = null;
 
@@ -65,20 +65,21 @@ class NeuralNetworkControler extends Controler {
     */
     update(dt) {
         /*
-        * deltaTime
+        * deltaTime * 100
         * position : x, y
         * velocity : x, y
         * engine : thrust, angle
         * terrain : every x, y points
         */
+        let scale = _pSimulationInstance.getEngineConfig().plotter.scale;
         let inputs = [
             dt,
-            this.lander.pos.x,
-            this.lander.pos.y,
-            this.lander.vel.x,
-            this.lander.vel.y,
-            this.lander.engine.thrustAmount,
-            this.lander.engine.thrustAngle,
+            this.lander.pos.x / scale.x,
+            this.lander.pos.y / scale.y,
+            this.lander.vel.x / 100,
+            this.lander.vel.y / 100,
+            this.lander.engine.thrustAmount / 1000,
+            this.lander.engine.thrustAngle / (2 * Math.PI),
             ...this.simulator.terrain.describe()
         ];
 
@@ -86,8 +87,11 @@ class NeuralNetworkControler extends Controler {
         let prediction = this.nn.predict(inputs);
 
         // Phenotype
-        this.lander.engine.rotate(prediction.get(0, 0));
-        this.lander.engine.thrust(prediction.get(1, 0));
+        // [ rotationX, rotationY, thrustUp, thrustDown ]
+        this.lander.engine.rotate( prediction.get(0, 0));
+        this.lander.engine.rotate(-prediction.get(1, 0));
+        this.lander.engine.thrust( prediction.get(2, 0));
+        this.lander.engine.thrust(-prediction.get(3, 0));
     }
 
 
@@ -95,9 +99,7 @@ class NeuralNetworkControler extends Controler {
     * @return the fitness value of this NeuralNetwork
     */
     estimateFitness() {
-        /** @TODO Create a better fitness function */
-        // console.log(this.lander.flyTime);
-        return Math.exp(this.lander.flyTime);
+        return this.lander.points;
     }
 
 
