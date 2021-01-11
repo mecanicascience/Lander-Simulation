@@ -19,6 +19,18 @@ class Matrix {
     }
 
     /**
+    * Creates a arr.lengthx1 matrix from an array
+    * @param arr The array
+    * @return The matrix
+    */
+    static fromArray(arr) {
+        let m = new Matrix(arr.length, 1);
+        return m.map((el, i, j, min, max) => arr[i]);
+    }
+
+
+
+    /**
     * @return the element at Matrix[i][j]
     */
     get(i, j) {
@@ -28,6 +40,58 @@ class Matrix {
         }
         return this.datas[i][j];
     }
+
+
+    /**
+    * Add another matrix to this matrix
+    * @param m The matrix
+    * @return The new matrix
+    */
+    add(m) {
+        if (this.cols != m.cols || this.rows != m.rows) {
+            console.error('Columns and Rows of this matrix must be the same.');
+            return;
+        }
+
+        return this.map(((el, i, j) => el + m.datas[i][j]));
+    }
+
+    /**
+    * Add two matrix as m1+m2
+    * @param m1 First Matrix
+    * @param m2 Second Matrix
+    * @return m1+m2
+    */
+    static add(m1, m2) {
+        return m1.copy().add(m2);
+    }
+
+    /**
+    * Multiplies two matrix as m1*m2 or consider m2 as a scalar
+    * @param m1 First Matrix
+    * @param m2 Second Matrix or scalar
+    * @return m1*m2
+    */
+    static mult(m1, m2) {
+        if (!(m2 instanceof Matrix)) // Scalar Product
+            return m1.map(el => el * m2);
+
+        // Matrix product
+        if (m1.cols != m2.rows) {
+            console.error('Columns and Rows of this matrix must match Columns and Rows of the passed matrix.');
+            return;
+        }
+
+        let m3 = new Matrix(m1.rows, m2.cols);
+        return m3.map(((el, i, j) => {
+            let sum = 0;
+            for (let k = 0; k < m1.cols; k++)
+                sum += m1.datas[i][k] * m2.datas[k][j];
+            return sum;
+        }));
+    }
+
+
 
     /**
     * Randomize each coefficient of the Matrix
@@ -47,7 +111,8 @@ class Matrix {
     * @return this, as the modified Matrix
     */
     map(fun, ...args) {
-        return this.datas = this.datas.map((row, j) => row.map((el, i) => fun(el, i, j, ...args)));
+        this.datas = this.datas.map((row, i) => row.map((el, j) => fun(el, i, j, ...args)));
+        return this;
     }
 
     /**
