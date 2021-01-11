@@ -135,7 +135,7 @@ class NeuralNetwork {
         // Activation function : 1/2 chance of parent1, 1/2 of parent2
         let activation_function = (random() > 0.5 ? parent1 : parent2)['activationFunction'];
 
-        // Hidden nodes
+        // Hidden nodes : same as parent1
         let hidden_nodes = parent1.hidden_nodes;
 
         // Create the NeuralNetworks
@@ -143,16 +143,24 @@ class NeuralNetwork {
             parent1.input_nodes, hidden_nodes, parent1.output_nodes,
             activation_function, nodes_datas
         );
-        nn.initialize('random');
 
 
         // Crossover weights and biases
-        parent1.ih_weights.log();
-        parent2.ih_weights.log();
-        nn.ih_weights.log();
-        console.log(" - ");
+        let crossoverFun;
+        if (mode == 'random-parent') {
+            crossoverFun = (el, i, j, p1Weight, p2Weight) => random(0, 1) > 0.5
+                ? p1Weight.get(i, j)
+                : p2Weight.get(i, j);
+        }
 
-        // Return new Neural network
+        nn.ih_weights.map(crossoverFun, parent1.ih_weights, parent2.ih_weights);
+        nn.ho_weights.map(crossoverFun, parent1.ho_weights, parent2.ho_weights);
+
+        nn.ih_bias.map(crossoverFun, parent1.ih_bias, parent2.ih_bias);
+        nn.ho_bias.map(crossoverFun, parent1.ho_bias, parent2.ho_bias);
+
+        nn.updateWeightDatas();
+
         return nn;
     }
 
@@ -161,7 +169,15 @@ class NeuralNetwork {
     * @param mutationRate The probability between 0 and 1 of a mutation
     */
     mutate(mutationRate) {
-        /** @TODO */
+        let mutationFun = (el, i, j, mutationRate) => random() < mutationRate
+            ? random(this.weights_datas.min, this.weights_datas.max)
+            : el;
+
+        this.ih_weights.map(mutationFun, mutationRate);
+        this.ho_weights.map(mutationFun, mutationRate);
+
+        this.ih_bias.map(mutationFun, mutationRate);
+        this.ho_bias.map(mutationFun, mutationRate);
     }
 
 

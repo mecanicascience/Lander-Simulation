@@ -99,7 +99,8 @@ class Matrix {
     /**
     * Executes a function on each terme of the matrix.
     * The function should return the new value of the corresponding element.
-    * @param fun The function ran as fun(element, element_row_index, element_column_index, args)
+    * The function is ran as fun(element, element_row_index, element_column_index, args)
+    * @param fun The function
     * @param args Arguments passed to the function as `map(your_function, arg0, arg1, ...)`
     * @return this, as the modified Matrix
     */
