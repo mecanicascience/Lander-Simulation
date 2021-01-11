@@ -1,11 +1,10 @@
 let sim = null;
 let initialConditions = [
-	new Vector(-70, 70), // initial position
+	new Vector(-70, '40% height'), // initial position
 	new Vector(20, 20),  // initial velocitity
 	-Math.PI * 0.2,      // initial engine angle
-	20                   // initial thrust amount
+	0                    // initial thrust amount
 ];
-
 
 function launchSimulation() {
 	let populationSize  = 5;
@@ -30,6 +29,9 @@ function launchSimulation() {
 
 
 function runSimulator(simulator) {
+
+
+
 	simulator
 		.setEngineConfig((engineConf) => {
 			engineConf.plotter.squareByX = true;
@@ -43,6 +45,8 @@ function runSimulator(simulator) {
 				x : 0,
 				y : 0.85 * engineConf.plotter.scale.y / 2
 			};
+
+			initialConditions[0].y = 0.7 * engineConf.plotter.scale.y / 2;
 		})
 		.addObjects(Simulator, 1, initialConditions);
 
