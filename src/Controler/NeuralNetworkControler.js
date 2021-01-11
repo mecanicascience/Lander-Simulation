@@ -7,7 +7,9 @@ class NeuralNetworkControler extends Controler {
         super();
 
         // Using ReLU activation function f(x) = max(0, x)
-        let activationFunction = x => x > 0 ? x : 0;
+        let reLU_activationFunction    = x => x > 0 ? x : 0;
+        let sigmoid_activationFunction = x => 1/(1 + Math.exp(-x));
+        let activationFunction = sigmoid_activationFunction;
 
         this.lander = null;
 
@@ -19,7 +21,12 @@ class NeuralNetworkControler extends Controler {
             this.input_nodes,
             this.hidden_nodes,
             this.output_nodes,
-            activationFunction
+            activationFunction,
+            [
+                { max : -100, min : -100 }, // input_nodes  supposed max and min values
+                { max : 0, min :  0 }, // hidden_nodes supposed max and min values
+                { max : 0, min :  0 }  // output_nodes supposed max and min values
+            ]
         );
     }
 
@@ -49,7 +56,7 @@ class NeuralNetworkControler extends Controler {
     * @param dt The delta time (in seconds)
     */
     update(dt) {
-        let inputs = [ this.lander.pos.x, this.lander.pos.y ]; // TODO
+        let inputs = [ this.lander.pos.x, 1000*noise(Date.now() / 300)-1 ]; // TODO
 
         // Genotype
         let prediction = this.nn.predict(inputs);
@@ -58,6 +65,15 @@ class NeuralNetworkControler extends Controler {
         this.lander.engine.rotate(prediction.get(0, 0));
         this.lander.engine.thrust(prediction.get(1, 0));
     }
+
+
+    /**
+    * @return the fitness value of this NeuralNetwork
+    */
+    estimateFitness() {
+        return random(0, 50);
+    }
+
 
     /**
     * Draws the Neural Network to the screen

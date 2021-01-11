@@ -6,7 +6,7 @@ class NeuralNetwork {
     * @param output_nodes Ouput neurons count
     * @param activationFunction The activation function of the NeuralNetwork
     */
-    constructor(input_nodes, hidden_nodes, output_nodes, activationFunction) {
+    constructor(input_nodes, hidden_nodes, output_nodes, activationFunction, nodes_datas) {
         this.input_nodes  = input_nodes;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = output_nodes;
@@ -18,6 +18,13 @@ class NeuralNetwork {
         this.ho_bias = new Matrix(this.output_nodes, 1);
 
         this.weights_datas = { max : 0, min : 0 };
+        this.nodes_datas = nodes_datas;
+        if (nodes_datas == undefined)
+            this.nodes_datas = [
+                { max : 0, min : 0 }, // input_nodes
+                { max : 0, min : 0 }, // hidden_nodes
+                { max : 0, min : 0 } // output_nodes
+            ];
 
         this.activationFunction = activationFunction;
     }
@@ -85,15 +92,15 @@ class NeuralNetwork {
     * @return The ouput array predicted
     */
     predict(input_arr) {
-        let a_0        = Matrix.fromArray(input_arr);
+        this.a_0        = Matrix.fromArray(input_arr);
 
-        let z_matrix_1 = Matrix.mult(this.ih_weights, a_0).add(this.ih_bias);
-        let a_1        = this.activate(z_matrix_1);
+        let z_matrix_1 = Matrix.mult(this.ih_weights, this.a_0).add(this.ih_bias);
+        this.a_1        = this.activate(z_matrix_1);
 
-        let z_matrix_2 = Matrix.mult(this.ho_weights, a_1).add(this.ho_bias);
-        let a_2        = this.activate(z_matrix_2);
+        let z_matrix_2 = Matrix.mult(this.ho_weights, this.a_1).add(this.ho_bias);
+        this.a_2        = this.activate(z_matrix_2);
 
-        return a_2;
+        return this.a_2;
     }
 
     /**
@@ -117,25 +124,34 @@ class NeuralNetwork {
         let maxNodes   = Math.max(this.input_nodes, this.hidden_nodes, this.output_nodes);
         let deltaSpace = new Vector(0.3 * s.x, 0.8 * s.y);
 
+        this.updateNodesDatas();
+
         for (let i = 0; i < 3; i++) { // column
             let x = -(s.x - deltaSpace.x) + i * (s.x - deltaSpace.x) + o.x;
             let m = (i == 1 ? this.hidden_nodes : (i == 2 ? this.output_nodes : this.input_nodes));
 
             for (let j = 0; j < m; j++) { // row
-                let y = j * (s.y - deltaSpace.y/2)/(m-1) + o.y - deltaSpace.y/3;
+                let y = (m-j-1) * (s.y - deltaSpace.y/2)/(m-1) + o.y - deltaSpace.y/3;
+
+                // Cell
+                let cellCol = (i == 1 ? this.a_1 : (i == 2 ? this.a_2 : this.a_0));
+                drawer
+                    .fill(this.getCellColor(
+                        cellCol.get(j, 0),
+                        this.nodes_datas[i].min,
+                        this.nodes_datas[i].max,
+                    ))
+                    .stroke(255)
+                    .strokeWeight(13 * 1 / maxNodes)
+                    .circle(x, y, 500 / maxNodes, true);
 
                 // Connexion with next level
                 drawer
                     .noFill()
                     .strokeWeight(10 * 1 / maxNodes);
 
-                // Cell
-                drawer
-                    .fill(70, 70, 70)
-                    .stroke(255, 255, 255)
-                    .circle(x, y, 500 / maxNodes, true);
-
                 if (i == 0) {
+                    // ih weights
                     for (let k = 0; k < this.hidden_nodes; k++) {
                         let mVal = this.getWeightColor(this.ih_weights.get(k, j));
                         let nm = this.hidden_nodes;
@@ -149,6 +165,7 @@ class NeuralNetwork {
                     }
                 }
                 else if (i == 1) {
+                    // ho weights
                     for (let k = 0; k < this.output_nodes; k++) {
                         let mVal = this.getWeightColor(this.ho_weights.get(k, j));
                         let nm = this.output_nodes;
@@ -181,6 +198,18 @@ class NeuralNetwork {
         return `rgba(${Math.round(2*normalizedWeight*255)}, 0, 0, 1)`;
     }
 
+    /**
+    * Get a cell color based on max and min values of the NeuralNetworks last cells
+    * @param c The cell
+    * @param min The min cell value
+    * @param max The max cell value
+    * @return The color of the cell as an rgba color
+    */
+    getCellColor(c, min, max) {
+        let color = Math.round((c - min) / (max - min) * 255);
+        return `rgba(${color}, ${color}, ${color}, 1)`;
+    }
+
 
 
 
@@ -207,6 +236,30 @@ class NeuralNetwork {
                 this.ih_bias.min(), this.ho_bias.min()
             )
         };
+    }
+
+    /**
+    * Update the min and max values of every last nodes values for drawing
+    */
+    updateNodesDatas() {
+        let n0 = {
+            max : [ this.nodes_datas[0].max, this.a_0.max() ],
+            min : [ this.nodes_datas[0].min, this.a_0.min() ]
+        };
+        let n1 = {
+            max : [ this.nodes_datas[1].max, this.a_1.max() ],
+            min : [ this.nodes_datas[1].min, this.a_1.min() ]
+        };
+        let n2 = {
+            max : [ this.nodes_datas[2].max, this.a_2.max() ],
+            min : [ this.nodes_datas[2].min, this.a_2.min() ]
+        };
+
+        this.nodes_datas = [
+            { max : Math.max(...n0.max), min : Math.min(...n0.min) }, // input_nodes
+            { max : Math.max(...n1.max), min : Math.min(...n1.min) }, // hidden_nodes
+            { max : Math.max(...n2.max), min : Math.min(...n2.min) }  // output_nodes
+        ];
     }
 
     /**

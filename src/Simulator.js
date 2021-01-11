@@ -8,13 +8,108 @@ class Simulator {
 
         this.landers     = [];
         this.displayType = {};
+
+        // vneuralNetwork' for generative neural network, 'player' for a player mode
+        this.simulationMode = 'neuralNetwork';
+        this.neuralNetworksDatas = {
+            generation : 1
+        };
     }
+
+    /** Initialize the controler after the other elements */
+    initialize() {
+        if (this.simulationMode == 'neuralNetwork') {
+            let nnControlersCount = 0;
+            for (let i = 0; i < this.landers.length; i++) {
+                 if (this.landers[i].controler instanceof NeuralNetworkControler)
+                    nnControlersCount += 1;
+            }
+            if (nnControlersCount <= 2)
+                throw new Error('There must be at least 3 Vessels in neuralNetwork simulation mode.')
+        }
+    }
+
+
 
     /** Updated simulation */
     update(dt) {
-        for (let i = 0; i < this.landers.length; i++)
+        let finished = true;
+        for (let i = 0; i < this.landers.length; i++) {
              this.landers[i].update(dt);
+             if (!this.landers[i].collided && this.landers[i].controler instanceof NeuralNetworkControler)
+                finished = false;
+        }
+
+        // Go to next generation
+        if (finished && this.simulationMode == 'neuralNetwork') {
+            let newPop = this.generateNextGeneration();
+
+            this.landers = newPop;
+            this.neuralNetworksDatas.generation += 1;
+
+            console.log(this.landers, this.neuralNetworksDatas.generation);
+            noLoop();
+        }
     }
+
+
+    /** @return the new Vessel population */
+    generateNextGeneration() {
+        let curPop = [];
+        for (let i = 0; i < this.landers.length; i++) {
+            if (this.landers[i].controler instanceof NeuralNetworkControler)
+                curPop.push(this.landers[i]);
+        }
+
+        // Calculate fitness of the population
+        let fitness = curPop.map(el => el.controler.estimateFitness());
+        let fitnessDatas = { min : Math.min(...fitness), max : Math.max(...fitness) };
+
+
+        // Normalize every fitness values to have their sum equals to 1
+        let fitnessNormalized = fitness.map(
+            el => (el - fitnessDatas.min) / (fitnessDatas.max - fitnessDatas.min)
+        );
+        let fitSum = fitnessNormalized.reduce((a, b) => a + b, 0);
+        fitnessNormalized = fitnessNormalized.map(el => el / fitSum);
+
+
+        // Sum each values as a probabilistic matingpool [x0, x0 + x1, x0 + x1 + x2, ...]
+        let matingPoolProbas = [ fitnessNormalized[0] ];
+        for (let i = 1; i < fitnessNormalized.length; i++)
+            matingPoolProbas[i] = matingPoolProbas[i - 1] + fitnessNormalized[i];
+
+
+        // Pick next population IDs from the mating pool
+        let newPopIDs = []; // [firstParentIDPair1, secondParentIDPair1, ...]
+        for (let i = 0; i < curPop.length * 2; i++) {
+            let r = random(0, 1);
+            let j = 0;
+            while (r > matingPoolProbas[j])
+                j++;
+
+             // parent can not reproduce themselfs alone
+            if (i % 2 == 1 && newPopIDs[i - 1] == j)
+                i -= 1;
+            else
+                newPopIDs.push(j);
+        }
+
+        // Generate and mutate new population
+        let newPop = [];
+        for (let i = 1; i < newPopIDs.length; i += 2) {
+            let p1 = curPop[newPopIDs[i-1]];
+            let p2 = curPop[newPopIDs[i]];
+
+            // Reproduce p1 and p2
+            console.log(p1, p2);
+        }
+
+        return newPop;
+    }
+
+
+
 
     /** Draws every object to the screen */
     draw(drawer) {
@@ -73,7 +168,8 @@ class Simulator {
                 new Vector(random(0, 60)-30, random(0, 60)-30),
                 2*Math.PI * random(0, 1),
                 random(0, 100)
-            )
+            );
+            this.initialize();
         });
     }
 
@@ -104,6 +200,7 @@ class Simulator {
             let lander = new Lander(this.terrain, controler);
 
             lander.initializeFromJSON(d);
+            this.initialize();
             this.landers.push(lander);
         }
     }

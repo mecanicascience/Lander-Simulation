@@ -2,21 +2,21 @@ let sim = null;
 
 
 function launchSimulation() {
-	let populationSize  = 100;
-	let hiddenNeurons   = 20;
-	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
-	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
+	let populationSize  = 4;
+	let hiddenNeurons   = 5;
+	let controlers      = Array(populationSize-1).fill(NeuralNetworkControler);
+	let controlersDatas = Array(populationSize-1).fill([ hiddenNeurons ]);
 
 	// Last controler is an Human
-	// controlers.push(HumanControler);
-	// controlersDatas.push([ ]);
+	controlers.push(HumanControler);
+	controlersDatas.push([ ]);
 
 	sim.newPopulation(populationSize, controlers, controlersDatas);
 	// sim.loadPopulation(_string_);
 
 
 	sim.displays('vessel');
-	sim.displays('controler', 0);
+	// sim.displays('controler', 0);
 	sim.start();
 
 	// Save population to console to a String
