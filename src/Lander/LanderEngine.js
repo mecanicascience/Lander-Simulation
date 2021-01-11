@@ -4,7 +4,7 @@ class LanderEngine {
         this.thrustAmount = 0; // 9.8*5;
         this.thrustAngle  = 0; // in rad
 
-        this.deltaFlame   = 0;
+        this.deltaFlame = 0;
     }
 
     /**
@@ -34,6 +34,13 @@ class LanderEngine {
     * @param dTheta The angle of rotation (in radians)
     */
     rotate(dTheta) {
+        let thetaRange = Math.PI / 4 / 10;
+
+        if (dTheta < -thetaRange)
+            dTheta = -thetaRange;
+        if (dTheta > thetaRange)
+            dTheta = thetaRange;
+
         this.thrustAngle += dTheta;
     }
 
@@ -42,7 +49,17 @@ class LanderEngine {
     * @param dThrust The delta of thrust
     */
     thrust(dThrust) {
+        let thrustRange = 0.8;
+
+        if (dThrust < -thrustRange)
+            dThrust = -thrustRange;
+        if (dThrust > thrustRange)
+            dThrust = thrustRange;
+
         this.thrustAmount += dThrust;
+
+        if (this.thrustAmount < 0)
+            this.thrustAmount = 0;
     }
 
 

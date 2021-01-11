@@ -4,21 +4,23 @@ class NeuralNetwork {
     * @param input_nodes  Input nodes count
     * @param hidden_nodes Hidden neurons count
     * @param output_nodes Ouput neurons count
+    * @param activationFunction The activation function of the NeuralNetwork
     */
-    constructor(input_nodes, hidden_nodes, output_nodes) {
+    constructor(input_nodes, hidden_nodes, output_nodes, activationFunction) {
         this.input_nodes  = input_nodes;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = output_nodes;
 
-        this.ih_weights = new Matrix(this.input_nodes , this.hidden_nodes);
-        this.ho_weights = new Matrix(this.hidden_nodes, this.output_nodes);
+        this.ih_weights = new Matrix(this.hidden_nodes, this.input_nodes);
+        this.ho_weights = new Matrix(this.output_nodes, this.hidden_nodes);
 
         this.ih_bias = new Matrix(this.hidden_nodes, 1);
         this.ho_bias = new Matrix(this.output_nodes, 1);
 
         this.weights_datas = { max : 0, min : 0 };
-    }
 
+        this.activationFunction = activationFunction;
+    }
 
 
     /**
@@ -40,7 +42,7 @@ class NeuralNetwork {
             this.ih_bias.randomize(min, max);
             this.ho_bias.randomize(min, max);
 
-            this.weights_datas = { max : max, min : min };
+            this.updateWeightDatas();
         }
         else if (mode == 'datas') {
             for (let i = 0; i < 3; i++) {
@@ -56,10 +58,7 @@ class NeuralNetwork {
             this.ih_bias = args[2];
             this.ho_bias = args[3];
 
-            this.weights_datas = {
-                max : Math.max(this.ih_weights.max(), this.ho_weights.max(), this.ih_bias.max(), this.ho_bias.max()),
-                min : Math.min(this.ih_weights.min(), this.ho_weights.min(), this.ih_bias.min(), this.ho_bias.min())
-            };
+            this.updateWeightDatas();
         }
         else if (mode == 'copy') { // please use nn.copy() function directly
             this.ih_weights = args[0].ih_weights.copy();
@@ -79,6 +78,33 @@ class NeuralNetwork {
 
             this.weights_datas = args[0].weights_datas;
         }
+    }
+
+
+    /**
+    * Make a guess
+    * @param inputs The input array (must be the same length as this.input_nodes)
+    * @return The ouput array predicted
+    */
+    predict(input_arr) {
+        let a_0        = Matrix.fromArray(input_arr);
+
+        let z_matrix_1 = Matrix.mult(this.ih_weights, a_0).add(this.ih_bias);
+        let a_1        = this.activate(z_matrix_1);
+
+        let z_matrix_2 = Matrix.mult(this.ho_weights, a_1).add(this.ho_bias);
+        let a_2        = this.activate(z_matrix_2);
+
+        return a_2;
+    }
+
+    /**
+    * Runs the activate function on each coefficient of the matrix
+    * @param m The matrix
+    * @return The modified matrix
+    */
+    activate(m) {
+        return m.copy().map((el, i, j) => this.activationFunction(el));
     }
 
 
@@ -158,6 +184,8 @@ class NeuralNetwork {
     }
 
 
+
+
     /**
     * @return a copy of this NeuralNetwork
     */
@@ -165,6 +193,22 @@ class NeuralNetwork {
         let nn = new NeuralNetwork(this.input_nodes, this.hidden_nodes, this.output_nodes);
         nn.initialize('copy', this);
         return nn;
+    }
+
+    /**
+    * Update the min and max values of every weights
+    */
+    updateWeightDatas() {
+        this.weights_datas = {
+            max : Math.max(
+                this.ih_weights.max(), this.ho_weights.max(),
+                this.ih_bias.max(), this.ho_bias.max()
+            ),
+            min : Math.min(
+                this.ih_weights.min(), this.ho_weights.min(),
+                this.ih_bias.min(), this.ho_bias.min()
+            )
+        };
     }
 
     /**

@@ -5,16 +5,21 @@ class NeuralNetworkControler extends Controler {
     */
     constructor(hidden_nodes) {
         super();
+
+        // Using ReLU activation function f(x) = max(0, x)
+        let activationFunction = x => x > 0 ? x : 0;
+
         this.lander = null;
 
-        this.input_nodes  = 3;
+        this.input_nodes  = 2;
         this.hidden_nodes = hidden_nodes;
-        this.output_nodes = 5;
+        this.output_nodes = 2;
 
         this.nn = new NeuralNetwork(
-            input_nodes,
-            hidden_nodes,
-            output_nodes
+            this.input_nodes,
+            this.hidden_nodes,
+            this.output_nodes,
+            activationFunction
         );
     }
 
@@ -44,7 +49,14 @@ class NeuralNetworkControler extends Controler {
     * @param dt The delta time (in seconds)
     */
     update(dt) {
-        // Do the computations here2021
+        let inputs = [ this.lander.pos.x, this.lander.pos.y ]; // TODO
+
+        // Genotype
+        let prediction = this.nn.predict(inputs);
+
+        // Phenotype
+        this.lander.engine.rotate(prediction.get(0, 0));
+        this.lander.engine.thrust(prediction.get(1, 0));
     }
 
     /**

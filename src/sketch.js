@@ -2,13 +2,13 @@ let sim = null;
 
 
 function launchSimulation() {
-	let populationSize  = 10;
-	let controlers      = Array(populationSize - 1).fill(NeuralNetworkControler);
-	let controlersDatas = Array(populationSize - 1).fill([ 20 ]);
+	let populationSize  = 2;
+	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
+	let controlersDatas = Array(populationSize).fill([ 5 ]);
 
 	// Last controler is an Human
-	controlers.push(HumanControler);
-	controlersDatas.push([ ]);
+	// controlers.push(HumanControler);
+	// controlersDatas.push([ ]);
 
 	sim.newPopulation(populationSize, controlers, controlersDatas);
 	// sim.loadPopulation(_string_);

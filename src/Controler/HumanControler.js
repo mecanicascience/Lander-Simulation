@@ -14,8 +14,8 @@ class HumanControler extends Controler {
 
     /** Update vessel thrust based on keys pressed */
     update(dt) {
-        let omega = 3;
-        let omethrust = 30;
+        let omega = 5;
+        let omethrust = 50;
 
         if (keyIsDown(RIGHT_ARROW)) {
             this.lander.engine.rotate(-omega * dt);
