@@ -13,9 +13,7 @@ class Simulator {
 
         // vneuralNetwork' for generative neural network, 'player' for a player mode
         this.simulationMode = 'neuralNetwork';
-        this.neuralNetworksDatas = {
-            generation : 1
-        };
+        this.neuralNetworkGeneration = 1;
     }
 
     /** Initialize the controler after the other elements */
@@ -29,6 +27,8 @@ class Simulator {
             if (nnControlersCount <= 2)
                 throw new Error('There must be at least 3 Vessels in neuralNetwork simulation mode.')
         }
+
+        this.neuralNetworkGeneration = 1;
     }
 
 
@@ -55,8 +55,7 @@ class Simulator {
             });
 
             // New generation
-            this.neuralNetworksDatas.generation += 1;
-            console.log(this.landers);
+            this.neuralNetworkGeneration += 1;
         }
     }
 
@@ -96,7 +95,7 @@ class Simulator {
             while (r > matingPoolProbas[j])
                 j++;
 
-             // parent can not reproduce themselfs alone
+             // Parent can not reproduce themselfs alone
             if (i % 2 == 1 && newPopIDs[i - 1] == j)
                 i -= 1;
             else
@@ -109,14 +108,15 @@ class Simulator {
             let p1 = curPop[newPopIDs[i-1]];
             let p2 = curPop[newPopIDs[i]];
 
-            // Reproduce p1 and p2
-            /** @TODO */
-            let p3 = p1;
-            p1.controler.nn.ih_weights.log();
-            p2.controler.nn.ih_weights.log();
+            // Crossover between p1 and p2
+            let hidden_nodes = p1.hidden_nodes;
+            let p3Controler = new NeuralNetworkControler(hidden_nodes);
+            p3Controler.crossover(p1.controler, p2.controler, 'random-parent');
 
-            let brain = new NeuralNetworkControler(p3.controler.hidden_nodes);
-            newPop.push(new Lander(this.terrain, brain));
+            // Mutate child
+            p3Controler.mutate();
+
+            newPop.push(new Lander(this.terrain, p3Controler));
         }
 
         return newPop;
@@ -212,6 +212,7 @@ class Simulator {
             this.landers.push(lander);
             lander.controler.initializeFromJSON(this.landers[i], d.controler);
         }
+
         this.initialize();
     }
 

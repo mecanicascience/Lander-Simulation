@@ -100,6 +100,8 @@ class NeuralNetwork {
         let z_matrix_2 = Matrix.mult(this.ho_weights, this.a_1).add(this.ho_bias);
         this.a_2        = this.activate(z_matrix_2);
 
+        this.updateNodesDatas();
+
         return this.a_2;
     }
 
@@ -113,6 +115,56 @@ class NeuralNetwork {
     }
 
 
+    /**
+    * Crossover two parents
+    * @param parent1 First parent
+    * @param parent2 Second parent
+    * @param mode Type of the crossover ('random-parent')
+    * @return a crossover between the two parents
+    */
+    static crossover(parent1, parent2, mode) {
+        // Nodes datas : max and min of each parent
+        let nodes_datas = [];
+        for (let i = 0; i < parent1.nodes_datas.length; i++) {
+            nodes_datas.push({
+                max : Math.max(parent1.nodes_datas[i].max, parent2.nodes_datas[i].max),
+                min : Math.min(parent1.nodes_datas[i].min, parent2.nodes_datas[i].min)
+            });
+        }
+
+        // Activation function : 1/2 chance of parent1, 1/2 of parent2
+        let activation_function = (random() > 0.5 ? parent1 : parent2)['activationFunction'];
+
+        // Hidden nodes
+        let hidden_nodes = parent1.hidden_nodes;
+
+        // Create the NeuralNetworks
+        let nn = new NeuralNetwork(
+            parent1.input_nodes, hidden_nodes, parent1.output_nodes,
+            activation_function, nodes_datas
+        );
+        nn.initialize('random');
+
+
+        // Crossover weights and biases
+        parent1.ih_weights.log();
+        parent2.ih_weights.log();
+        nn.ih_weights.log();
+        console.log(" - ");
+
+        // Return new Neural network
+        return nn;
+    }
+
+    /**
+    * Mutate the NeuralNetwork
+    * @param mutationRate The probability between 0 and 1 of a mutation
+    */
+    mutate(mutationRate) {
+        /** @TODO */
+    }
+
+
 
     /**
     * Draw the Neural Network to the screen
@@ -123,8 +175,6 @@ class NeuralNetwork {
         let o = _pSimulationInstance.config.engine.plotter.offset;
         let maxNodes   = Math.max(this.input_nodes, this.hidden_nodes, this.output_nodes);
         let deltaSpace = new Vector(0.3 * s.x, 0.8 * s.y);
-
-        this.updateNodesDatas();
 
         for (let i = 0; i < 3; i++) { // column
             let x = -(s.x - deltaSpace.x) + i * (s.x - deltaSpace.x) + o.x;
