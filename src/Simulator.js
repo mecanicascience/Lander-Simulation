@@ -165,9 +165,9 @@ class Simulator {
         this.landers.forEach((item, i) => {
             item.initialize(
                 new Vector(-70, 70),
-                new Vector(random(0, 60)-30, random(0, 60)-30),
-                2*Math.PI * random(0, 1),
-                random(0, 100)
+                new Vector(20, 20),
+                -Math.PI * 0.2,
+                20
             );
             this.initialize();
         });
