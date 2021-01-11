@@ -17,7 +17,7 @@ class NeuralNetworkControler extends Controler {
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = 2;
 
-        this.mutationRate = 0.001;
+        this.mutationRate = 0.1;
 
         this.nodes_datas = [
             { max : -100, min : -100 }, // input_nodes  supposed max and min values
