@@ -11,6 +11,8 @@ class Lander {
 
         this.collided = false;
         this.DEBUG = true;
+
+        this.flyTime = 0;
     }
 
     /**
@@ -40,6 +42,8 @@ class Lander {
             new Vector( 1.3, -2.2),
             new Vector(-1.3, -2.2)
         ];
+
+        this.flyTime = 0;
     }
 
     /**
@@ -80,6 +84,8 @@ class Lander {
         // Computes and react to collisions
         if (this.intersectWithBoundaries())
             this.collided = true;
+
+        this.flyTime += dt;
     }
 
 
@@ -186,7 +192,7 @@ class Lander {
                 .endShape()
 
                 // LanderEngine
-                this.engine.draw(drawer);
+                this.engine.draw(drawer, !this.collided);
         drawer.pop();
     }
 

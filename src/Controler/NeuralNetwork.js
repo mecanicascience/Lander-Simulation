@@ -201,6 +201,9 @@ class NeuralNetwork {
 
                 // Cell
                 let cellCol = (i == 1 ? this.a_1 : (i == 2 ? this.a_2 : this.a_0));
+                if (!(cellCol instanceof Matrix))
+                    return;
+
                 drawer
                     .fill(this.getCellColor(
                         cellCol.get(j, 0),

@@ -64,7 +64,7 @@ class LanderEngine {
 
 
     /** Draws the engine and its flame */
-    draw(drawer) {
+    draw(drawer, drawFlame) {
         this.deltaFlame += 0.1;
         let flameSize = 2*Math.sqrt(this.thrustAmount / 2);
 
@@ -83,10 +83,13 @@ class LanderEngine {
                 .vertex(0, 0)
                 .vertex(-6, -10)
                 .vertex( 6, -10)
-            .endShape(CLOSE)
+            .endShape(CLOSE);
 
-            // Flame
-            .noStroke()
+        // Flame
+        if (!drawFlame)
+            return;
+
+        drawer.noStroke()
             .push()
                 .translate(0, -10)
                 // Big flame

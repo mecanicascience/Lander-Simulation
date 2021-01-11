@@ -61,7 +61,10 @@ class NeuralNetworkControler extends Controler {
     * @param dt The delta time (in seconds)
     */
     update(dt) {
-        let inputs = [ this.lander.pos.x, 1000*noise(Date.now() / 300)-1 ]; // TODO
+        let inputs = [
+            this.lander.pos.x,
+            this.lander.pos.y
+        ];
 
         // Genotype
         let prediction = this.nn.predict(inputs);
@@ -76,7 +79,8 @@ class NeuralNetworkControler extends Controler {
     * @return the fitness value of this NeuralNetwork
     */
     estimateFitness() {
-        return random(0, 50);
+        /** @TODO Create a better fitness function */
+        return this.lander.flyTime * 1000;
     }
 
 
