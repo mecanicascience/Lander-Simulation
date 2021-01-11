@@ -9,7 +9,7 @@ class NeuralNetworkControler extends Controler {
         // Using ReLU activation function f(x) = max(0, x)
         let reLU_activationFunction    = x => x > 0 ? x : 0;
         let sigmoid_activationFunction = x => 1/(1 + Math.exp(-x));
-        this.activationFunction = sigmoid_activationFunction;
+        this.activationFunction = reLU_activationFunction;
 
         this.lander = null;
 

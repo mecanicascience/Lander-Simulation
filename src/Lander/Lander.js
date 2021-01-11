@@ -10,7 +10,7 @@ class Lander {
         this.controler = controler;
 
         this.collided = false;
-        this.DEBUG = true;
+        this.DEBUG = false;
 
         this.flyTime = 0;
     }

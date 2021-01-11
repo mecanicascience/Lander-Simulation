@@ -11,9 +11,11 @@ class Simulator {
 
         this.initialConditions = initialConditions;
 
-        // vneuralNetwork' for generative neural network, 'player' for a player mode
+        // neuralNetwork' for generative neural network, 'player' for a player mode
         this.simulationMode = 'neuralNetwork';
-        this.neuralNetworkGeneration = 1;
+        this.neuralNetworkGeneration = 0;
+
+        this.gui = new OptionsGUI();
     }
 
     /** Initialize the controler after the other elements */
@@ -29,6 +31,7 @@ class Simulator {
         }
 
         this.neuralNetworkGeneration = 1;
+        this.resetGUI();
     }
 
 
@@ -56,7 +59,25 @@ class Simulator {
 
             // New generation
             this.neuralNetworkGeneration += 1;
+            this.resetGUI();
         }
+    }
+
+    /** Resets the GUI */
+    resetGUI() {
+        this.gui.reset();
+        this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration + '');
+        this.gui.addList(
+            '\\text{Mode}',
+            { 'Simulation' : 0, 'Controler' : 1 },
+            0, this.gui.datas.configuration,
+            (val) => sim.displays(val ? 'controler' : 'vessel', 0)
+        );
+        this.gui.addInput(
+            '\\text{Neural ID}', this.displayType.id, 0, this.landers.length - 1,
+            this.gui.datas.configuration,
+            (val) => sim.displays(this.displayType.type, Math.round(val))
+        );
     }
 
 
