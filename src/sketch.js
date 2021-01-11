@@ -1,15 +1,16 @@
 let sim = null;
 let initialConditions = [
 	new Vector(-70, '40% height'), // initial position
-	new Vector(20, 20),  // initial velocitity
-	-Math.PI * 0.2,      // initial engine angle
-	0                    // initial thrust amount
+	new Vector(20, 10),  // initial velocitity
+	0,   // initial engine angle
+	0    // initial thrust amount
 ];
-let terrainPrecision = 5;
+let terrainPrecision = 50;
+let mutationRate = 0.1;
 
 function launchSimulation() {
-	let populationSize  = 50;
-	let hiddenNeurons   = 50;
+	let populationSize  = 100;
+	let hiddenNeurons   = 100;
 	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
 	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
 

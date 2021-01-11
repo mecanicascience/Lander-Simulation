@@ -85,16 +85,26 @@ class Lander {
         if (this.intersectWithBoundaries())
             this.collided = true;
 
-        this.points += this.computePoints(dt);
+        // Angle between -critical and +critical
+        let criticalAngle = Math.PI / 2;
+        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle) {
+            this.points = this.points * 0.1;
+            this.collided = true;
+        }
+
+        this.computePoints(dt);
     }
 
     computePoints(dt) {
-        let points = 0;
+        // Time in flight
+        this.points += 100 * dt;
 
-        points += 1 * dt; // Time in flight
-        
+        let criticalAngle = Math.PI / 3;
+        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle)
+            this.points -= 50 * dt;
 
-        return points;
+        if (this.points < 0)
+            this.points = 0;
     }
 
 

@@ -18,6 +18,10 @@ class Simulator {
         this.gui = new OptionsGUI();
     }
 
+    getInitialAngle() {
+        return random(-Math.PI/4, Math.PI/4);
+    }
+
     /** Initialize the controler after the other elements */
     initialize() {
         if (this.simulationMode == 'neuralNetwork') {
@@ -58,7 +62,9 @@ class Simulator {
             this.landers = newPop;
 
             // Initialize each lander
+            let a = this.getInitialAngle();
             this.landers.forEach((item, i) => {
+                this.initialConditions[2] = a;
                 item.initialize(...this.initialConditions);
                 item.controler.initialize(item, 'copy', item.controler.nn);
             });
@@ -202,7 +208,10 @@ class Simulator {
             this.landers.push(new Lander(this.terrain, controler));
         }
 
+
+        let a = this.getInitialAngle();
         this.landers.forEach((item, i) => {
+            this.initialConditions[2] = a;
             item.initialize(...this.initialConditions);
             item.controler.initialize(item);
             this.initialize();

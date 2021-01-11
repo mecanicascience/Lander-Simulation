@@ -11,10 +11,9 @@ class NeuralNetworkControler extends Controler {
         let sigmoid_activationFunction = x => 1 / (1 + Math.exp(-x));
         this.activationFunction = reLU_activationFunction;
 
-        this.mutationRate = 0.1;
         this.gaussianDistribution = {
             mean : 0,
-            standard_deviation : 0.1
+            standard_deviation : 0.05
         };
 
         this.input_nodes  = 7 + simulator.terrain.describe().length;
@@ -79,7 +78,7 @@ class NeuralNetworkControler extends Controler {
             this.lander.vel.x / 100,
             this.lander.vel.y / 100,
             this.lander.engine.thrustAmount / 1000,
-            this.lander.engine.thrustAngle / (2 * Math.PI),
+            this.lander.engine.thrustAngle / Math.PI,
             ...this.simulator.terrain.describe()
         ];
 
@@ -99,6 +98,8 @@ class NeuralNetworkControler extends Controler {
     * @return the fitness value of this NeuralNetwork
     */
     estimateFitness() {
+        if (this.lander.points == 0)
+            this.lander.points = 1;
         return this.lander.points;
     }
 
@@ -107,7 +108,7 @@ class NeuralNetworkControler extends Controler {
     * Mutate the NeuralNetwork
     */
     mutate() {
-        this.nn.mutate(this.mutationRate, this.gaussianDistribution);
+        this.nn.mutate(mutationRate, this.gaussianDistribution);
     }
 
     /**
