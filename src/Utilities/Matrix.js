@@ -34,10 +34,8 @@ class Matrix {
     * @return the element at Matrix[i][j]
     */
     get(i, j) {
-        if (this.datas[i] == undefined) {
-            console.error(`The matrix element at (${i}, ${j}) is undefined.`);
-            return null;
-        }
+        if (this.datas[i] == undefined)
+            throw new Error(`The matrix element at (${i}, ${j}) is undefined.`);
         return this.datas[i][j];
     }
 
@@ -48,11 +46,8 @@ class Matrix {
     * @return The new matrix
     */
     add(m) {
-        if (this.cols != m.cols || this.rows != m.rows) {
-            console.error('Columns and Rows of this matrix must be the same.');
-            return;
-        }
-
+        if (this.cols != m.cols || this.rows != m.rows)
+            throw new Error('Columns and Rows of this matrix must be the same.');
         return this.map(((el, i, j) => el + m.datas[i][j]));
     }
 
@@ -77,10 +72,8 @@ class Matrix {
             return m1.map(el => el * m2);
 
         // Matrix product
-        if (m1.cols != m2.rows) {
-            console.error('Columns and Rows of this matrix must match Columns and Rows of the passed matrix.');
-            return;
-        }
+        if (m1.cols != m2.rows)
+            throw new Error('Columns and Rows of this matrix must match Columns and Rows of the passed matrix.');
 
         let m3 = new Matrix(m1.rows, m2.cols);
         return m3.map(((el, i, j) => {

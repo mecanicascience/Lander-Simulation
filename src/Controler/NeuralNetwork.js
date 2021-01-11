@@ -46,10 +46,8 @@ class NeuralNetwork {
         }
         else if (mode == 'datas') {
             for (let i = 0; i < 3; i++) {
-                if (!(args[i] instanceof Matrix)) {
-                    console.error(`The datas provided for the Neural Network are not matrices.`);
-                    return;
-                }
+                if (!(args[i] instanceof Matrix))
+                    throw new Error(`The datas provided for the Neural Network are not matrices.`);
             }
 
             this.ih_weights = args[0];
@@ -139,7 +137,7 @@ class NeuralNetwork {
 
                 if (i == 0) {
                     for (let k = 0; k < this.hidden_nodes; k++) {
-                        let mVal = this.getWeightColor(this.ih_weights.get(j, k));
+                        let mVal = this.getWeightColor(this.ih_weights.get(k, j));
                         let nm = this.hidden_nodes;
 
                         let nx = -(s.x - deltaSpace.x) + 1 * (s.x - deltaSpace.x) + o.x;
@@ -152,7 +150,7 @@ class NeuralNetwork {
                 }
                 else if (i == 1) {
                     for (let k = 0; k < this.output_nodes; k++) {
-                        let mVal = this.getWeightColor(this.ho_weights.get(j, k));
+                        let mVal = this.getWeightColor(this.ho_weights.get(k, j));
                         let nm = this.output_nodes;
 
                         let nx = -(s.x - deltaSpace.x) + 2 * (s.x - deltaSpace.x) + o.x;
