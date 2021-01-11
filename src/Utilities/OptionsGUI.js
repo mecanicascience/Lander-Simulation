@@ -104,6 +104,25 @@ class OptionsGUI {
 
 
     /**
+    * Add a checkbox to the screen (if you imported MathJax, uses LaTeX to display)
+    * @param name     Name of the checkbox
+    * @param checked  True if the checkbox is initialy checked
+    * @param callback OnClick callback
+    * @param folder   Reference of the folder (default this.datas.configuration)
+    */
+    addCheckbox(name, checked, callback, folder = this.datas.configuration) {
+        let datas = {};
+        datas[name] = checked;
+        let newCheckbox = folder._folder
+            .addInput(datas, name)
+            .on('change', (el) => callback(el));
+
+        if (this.usesMathJax)
+            this.processHTMLLaTeX(newCheckbox.controller.view.elem_.children[0], 'element');
+    }
+
+
+    /**
     * Add a list to the screen (if you imported MathJax, uses LaTeX to display)
     * @param name         Name of the list
     * @param values       Values taken by the input

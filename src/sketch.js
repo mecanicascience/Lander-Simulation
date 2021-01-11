@@ -8,8 +8,8 @@ let initialConditions = [
 
 
 function launchSimulation() {
-	let populationSize  = 10;
-	let hiddenNeurons   = 10;
+	let populationSize  = 5;
+	let hiddenNeurons   = 20;
 	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
 	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
 
@@ -19,17 +19,12 @@ function launchSimulation() {
 	// populationSize += 1;
 
 	sim.newPopulation(populationSize, controlers, controlersDatas);
-	// sim.loadPopulation(_string_);
-
-
 	sim.displays('vessel');
-	sim.start();
+	sim.play();
 
-
-	// sim.displays('controler', 0);
-
-	// Save population to console to a String
-	// let sim = sim.savePopulation();
+	// Save and load population to console to a String
+	// let str_sim = sim.savePopulation();
+	// sim.loadPopulation(str_sim);
 }
 
 

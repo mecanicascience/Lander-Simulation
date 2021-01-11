@@ -1,7 +1,7 @@
 class Simulator {
     /** The main controler of the simulation */
     constructor(initialConditions) {
-        this.pause = true;
+        this.pauseState = true;
 
         this.terrain = new Terrain();
         this.terrain.generate();
@@ -38,6 +38,9 @@ class Simulator {
 
     /** Updated simulation */
     update(dt) {
+        if (this.pauseState)
+            return;
+
         let finished = true;
         for (let i = 0; i < this.landers.length; i++) {
              this.landers[i].update(dt);
@@ -74,9 +77,13 @@ class Simulator {
             (val) => sim.displays(val ? 'controler' : 'vessel', 0)
         );
         this.gui.addInput(
-            '\\text{Neural ID}', this.displayType.id, 0, this.landers.length - 1,
+            '\\text{Selected ID}', this.displayType.id, 0, this.landers.length - 1,
             this.gui.datas.configuration,
             (val) => sim.displays(this.displayType.type, Math.round(val))
+        );
+        this.gui.addCheckbox(
+            '\\text{Pause}', false,
+            (val) => val ? sim.pause() : sim.play()
         );
     }
 
@@ -148,24 +155,23 @@ class Simulator {
 
     /** Draws every object to the screen */
     draw(drawer) {
-        if (this.pause)
-            return;
-
         if (this.displayType.type == 'vessel')
             this.terrain.draw(drawer);
 
         for (let i = 0; i < this.landers.length; i++) {
             if (this.displayType.type == 'vessel')
-                this.landers[i].draw(drawer);
+                this.landers[i].draw(drawer, 'vessel', i == this.displayType.id);
             else if (i == this.displayType.id)
-                this.landers[i].draw(drawer, 'controler')
+                this.landers[i].draw(drawer, 'controler', i == this.displayType.id)
         }
     }
 
-    /** Starts the simulation */
-    start() {this.pause = false; }
+
     /** Pause the simulation */
-    pause() { this.pause = true; }
+    pause() { this.pauseState = true;  }
+
+    /** Plays the simulation */
+    play()  { this.pauseState = false; }
 
 
     /**
@@ -173,7 +179,7 @@ class Simulator {
     * @param type Type of the display ('vessel' or 'controler')
     * @param id If type is 'controler', the id of the controler to be shown
     */
-    displays(type, id = -1) {
+    displays(type, id = 0) {
         this.displayType = { type : type, id : id };
     }
 

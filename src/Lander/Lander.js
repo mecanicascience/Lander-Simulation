@@ -92,13 +92,13 @@ class Lander {
     /**
     * Draws the lander, optionnaly its controler, and optionnaly its debug parameters
     */
-    draw(drawer, type) {
+    draw(drawer, type, selected) {
         if (type == 'controler') {
             this.controler.draw(drawer);
             return;
         }
 
-        this.drawBody(drawer);
+        this.drawBody(drawer, selected);
 
         if (this.DEBUG)
             this.drawDebug(drawer);
@@ -172,11 +172,19 @@ class Lander {
     /**
     * Draws the body of the Lander and its engine
     */
-    drawBody(drawer) {
-        drawer
-            .stroke(255, 255, 255, 0.7)
-            .fill  (255, 255, 255, 0.5)
-            .push()
+    drawBody(drawer, selected) {
+        if (selected) {
+            drawer
+                .stroke(240, 40, 40, 1)
+                .fill  (220,  50,  50, 1);
+        }
+        else {
+            drawer
+                .stroke(255, 255, 255, 0.5)
+                .fill  (255, 255, 255, 0.3);
+        }
+
+        drawer.push()
                 .translate(this.pos.x, this.pos.y)
                 .rotate(this.engine.thrustAngle)
                 .scale(0.7)
