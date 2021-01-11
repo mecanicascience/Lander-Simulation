@@ -2,9 +2,10 @@ let sim = null;
 
 
 function launchSimulation() {
-	let populationSize  = 2;
+	let populationSize  = 100;
+	let hiddenNeurons   = 10;
 	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
-	let controlersDatas = Array(populationSize).fill([ 5 ]);
+	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
 
 	// Last controler is an Human
 	// controlers.push(HumanControler);
