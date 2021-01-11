@@ -47,7 +47,7 @@ class NeuralNetworkControler extends Controler {
     * @param data Data of the Neural Network of the last corresponding lander
     */
     initializeFromJSON(lander, data) {
-        this.nn.initialize(lander, 'json', data.neural_network);
+        this.initialize(lander, 'json', data.neural_network);
     }
 
 

@@ -1,6 +1,6 @@
 class Simulator {
     /** The main controler of the simulation */
-    constructor() {
+    constructor(initialConditions) {
         this.pause = true;
 
         this.terrain = new Terrain();
@@ -8,6 +8,8 @@ class Simulator {
 
         this.landers     = [];
         this.displayType = {};
+
+        this.initialConditions = initialConditions;
 
         // vneuralNetwork' for generative neural network, 'player' for a player mode
         this.simulationMode = 'neuralNetwork';
@@ -42,13 +44,19 @@ class Simulator {
 
         // Go to next generation
         if (finished && this.simulationMode == 'neuralNetwork') {
+            // Generate new population
             let newPop = this.generateNextGeneration();
-
             this.landers = newPop;
-            this.neuralNetworksDatas.generation += 1;
 
-            console.log(this.landers, this.neuralNetworksDatas.generation);
-            noLoop();
+            // Initialize each lander
+            this.landers.forEach((item, i) => {
+                item.initialize(...this.initialConditions);
+                item.controler.initialize(item, 'copy', item.controler.nn);
+            });
+
+            // New generation
+            this.neuralNetworksDatas.generation += 1;
+            console.log(this.landers);
         }
     }
 
@@ -102,7 +110,13 @@ class Simulator {
             let p2 = curPop[newPopIDs[i]];
 
             // Reproduce p1 and p2
-            console.log(p1, p2);
+            /** @TODO */
+            let p3 = p1;
+            p1.controler.nn.ih_weights.log();
+            p2.controler.nn.ih_weights.log();
+
+            let brain = new NeuralNetworkControler(p3.controler.hidden_nodes);
+            newPop.push(new Lander(this.terrain, brain));
         }
 
         return newPop;
@@ -163,12 +177,8 @@ class Simulator {
         }
 
         this.landers.forEach((item, i) => {
-            item.initialize(
-                new Vector(-70, 70),
-                new Vector(20, 20),
-                -Math.PI * 0.2,
-                20
-            );
+            item.initialize(...this.initialConditions);
+            item.controler.initialize(item);
             this.initialize();
         });
     }
@@ -198,11 +208,11 @@ class Simulator {
             }
 
             let lander = new Lander(this.terrain, controler);
-
             lander.initializeFromJSON(d);
-            this.initialize();
             this.landers.push(lander);
+            lander.controler.initializeFromJSON(this.landers[i], d.controler);
         }
+        this.initialize();
     }
 
     /** @return a String representation of the current Lander population */

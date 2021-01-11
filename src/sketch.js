@@ -1,8 +1,14 @@
 let sim = null;
+let initialConditions = [
+	new Vector(-70, 70), // initial position
+	new Vector(20, 20),  // initial velocitity
+	-Math.PI * 0.2,      // initial engine angle
+	20                   // initial thrust amount
+];
 
 
 function launchSimulation() {
-	let populationSize  = 4;
+	let populationSize  = 10;
 	let hiddenNeurons   = 5;
 	let controlers      = Array(populationSize-1).fill(NeuralNetworkControler);
 	let controlersDatas = Array(populationSize-1).fill([ hiddenNeurons ]);
@@ -40,7 +46,7 @@ function runSimulator(simulator) {
 				y : 0.85 * engineConf.plotter.scale.y / 2
 			};
 		})
-		.addObjects(Simulator);
+		.addObjects(Simulator, 1, initialConditions);
 
 	// Global var for the NeuralNetworkHandler
 	sim = _pSimulationInstance.plotter.objectsL[0];

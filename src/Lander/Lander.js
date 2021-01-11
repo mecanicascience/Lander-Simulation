@@ -40,8 +40,6 @@ class Lander {
             new Vector( 1.3, -2.2),
             new Vector(-1.3, -2.2)
         ];
-
-        this.controler.initialize(this);
     }
 
     /**
@@ -55,7 +53,6 @@ class Lander {
             d.thrustAngle0,
             d.thrustAmount0
         );
-        this.controler.initializeFromJSON(this, d.controler);
     }
 
 
