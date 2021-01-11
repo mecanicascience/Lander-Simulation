@@ -141,7 +141,11 @@ class Lander {
                 x : angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
                 y : angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
             };
-            if (pos.x < -100 || pos.x > 100)
+
+            let dim = _pSimulationInstance.config.engine.plotter.scale;
+            if (pos.x < -dim.x || pos.x > dim.x)
+                return true;
+            if (pos.y > dim.y) // maximum height
                 return true;
         }
 

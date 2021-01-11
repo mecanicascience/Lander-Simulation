@@ -29,9 +29,6 @@ function launchSimulation() {
 
 
 function runSimulator(simulator) {
-
-
-
 	simulator
 		.setEngineConfig((engineConf) => {
 			engineConf.plotter.squareByX = true;
