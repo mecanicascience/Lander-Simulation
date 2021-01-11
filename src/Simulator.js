@@ -102,18 +102,14 @@ class Simulator {
 
 
         // Normalize every fitness values to have their sum equals to 1
-        let fitnessNormalized = fitness.map(
-            el => (el - fitnessDatas.min) / (fitnessDatas.max - fitnessDatas.min)
-        );
-        let fitSum = fitnessNormalized.reduce((a, b) => a + b, 0);
-        fitnessNormalized = fitnessNormalized.map(el => el / fitSum);
+        let fitSum = fitness.reduce((a, b) => a + b, 0);
+        let fitnessNormalized = fitness.map(el => el / fitSum);
 
 
         // Sum each values as a probabilistic matingpool [x0, x0 + x1, x0 + x1 + x2, ...]
         let matingPoolProbas = [ fitnessNormalized[0] ];
         for (let i = 1; i < fitnessNormalized.length; i++)
             matingPoolProbas[i] = matingPoolProbas[i - 1] + fitnessNormalized[i];
-
 
         // Pick next population IDs from the mating pool
         let newPopIDs = []; // [firstParentIDPair1, secondParentIDPair1, ...]

@@ -11,19 +11,22 @@ class NeuralNetworkControler extends Controler {
         let sigmoid_activationFunction = x => 1/(1 + Math.exp(-x));
         this.activationFunction = reLU_activationFunction;
 
-        this.lander = null;
+        this.mutationRate = 0.1;
+        this.gaussianDistribution = {
+            mean : 0,
+            standard_deviation : 0.1
+        };
 
         this.input_nodes  = 2;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = 2;
-
-        this.mutationRate = 0.1;
 
         this.nodes_datas = [
             { max : -100, min : -100 }, // input_nodes  supposed max and min values
             { max : 0, min :  0 }, // hidden_nodes supposed max and min values
             { max : 0, min :  0 }  // output_nodes supposed max and min values
         ];
+        this.lander = null;
 
         this.nn = new NeuralNetwork(
             this.input_nodes,
@@ -80,7 +83,8 @@ class NeuralNetworkControler extends Controler {
     */
     estimateFitness() {
         /** @TODO Create a better fitness function */
-        return this.lander.flyTime * 1000;
+        // console.log(this.lander.flyTime);
+        return this.lander.flyTime;
     }
 
 
@@ -88,7 +92,7 @@ class NeuralNetworkControler extends Controler {
     * Mutate the NeuralNetwork
     */
     mutate() {
-        this.nn.mutate(this.mutationRate);
+        this.nn.mutate(this.mutationRate, this.gaussianDistribution);
     }
 
     /**

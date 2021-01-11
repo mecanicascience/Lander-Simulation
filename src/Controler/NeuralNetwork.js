@@ -168,9 +168,9 @@ class NeuralNetwork {
     * Mutate the NeuralNetwork
     * @param mutationRate The probability between 0 and 1 of a mutation
     */
-    mutate(mutationRate) {
+    mutate(mutationRate, gaussianDistribution) {
         let mutationFun = (el, i, j, mutationRate) => random() < mutationRate
-            ? random(this.weights_datas.min, this.weights_datas.max)
+            ? el + randomGaussian(gaussianDistribution.mean, gaussianDistribution.standard_deviation)
             : el;
 
         this.ih_weights.map(mutationFun, mutationRate);
