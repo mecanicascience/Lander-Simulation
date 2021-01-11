@@ -1,7 +1,7 @@
 class HumanControler extends Controler {
     /** For players landers controlled with keyboard */
-    constructor() {
-        super();
+    constructor(simulator) {
+        super(simulator);
     }
 
     /**

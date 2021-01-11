@@ -1,9 +1,9 @@
 class Simulator {
     /** The main controler of the simulation */
-    constructor(initialConditions) {
+    constructor(initialConditions, terrainPrecision) {
         this.pauseState = true;
 
-        this.terrain = new Terrain();
+        this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
 
         this.landers     = [];
@@ -134,7 +134,7 @@ class Simulator {
 
             // Crossover between p1 and p2
             let hidden_nodes = p1.hidden_nodes;
-            let p3Controler = new NeuralNetworkControler(hidden_nodes);
+            let p3Controler = new NeuralNetworkControler(this, hidden_nodes);
             p3Controler.crossover(p1.controler, p2.controler, 'random-parent');
 
             // Mutate child
@@ -193,9 +193,9 @@ class Simulator {
         for (let i = 0; i < populationSize; i++) {
             let controler;
             if (controlersArgs[i] != undefined)
-                controler = new controlersClass[i](...controlersArgs[i]);
+                controler = new controlersClass[i](this, ...controlersArgs[i]);
             else
-                controler = new controlersClass[i]();
+                controler = new controlersClass[i](this);
             this.landers.push(new Lander(this.terrain, controler));
         }
 
@@ -221,13 +221,11 @@ class Simulator {
             let controler;
             if (d.controlerName == 'NeuralNetworkControler') {
                 controler = new NeuralNetworkControler(
-                    d.controler.input_nodes,
-                    d.controler.hidden_nodes,
-                    d.controler.output_nodes
+                    this, d.controler.hidden_nodes
                 );
             }
             else if (d.controlerName == 'HumanControler') {
-                controler = new HumanControler();
+                controler = new HumanControler(this);
             }
 
             let lander = new Lander(this.terrain, controler);

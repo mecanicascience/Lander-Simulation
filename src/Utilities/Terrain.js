@@ -1,12 +1,12 @@
 class Terrain {
     /** Class of the Terrain constructor */
-    constructor() {
+    constructor(precision) {
         this.points = [];
 
         let pl = _pSimulationInstance.config.engine.plotter;
         this.size = new Vector(pl.scale.x, pl.scale.y);
 
-        this.precision = 300; // 300;
+        this.precision = precision; // 300;
         this.noiseVal = 0;
 
 
@@ -36,6 +36,15 @@ class Terrain {
         let noiseHeightRange = this.size.y / 6;
 
         return noiseHeightRange * noise(index / noise_scalar);
+    }
+
+
+    /** @return an Array representation of this terrain as [x1, y1, ...] */
+    describe() {
+        let rep = [];
+        for (let i = 0; i < this.points.length; i++)
+            rep.push(this.points[i].x, this.points[i].y);
+        return rep;
     }
 
 

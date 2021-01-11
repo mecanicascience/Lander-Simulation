@@ -3,28 +3,28 @@ class NeuralNetworkControler extends Controler {
     * Creates a new Neural Network Controler
     * @param hidden_nodes The number of hidden nodes of the NeuralNetwork
     */
-    constructor(hidden_nodes) {
-        super();
+    constructor(simulator, hidden_nodes) {
+        super(simulator);
 
         // Using ReLU activation function f(x) = max(0, x)
         let reLU_activationFunction    = x => x > 0 ? x : 0;
-        let sigmoid_activationFunction = x => 1/(1 + Math.exp(-x));
+        let sigmoid_activationFunction = x => 1 / (1 + Math.exp(-x));
         this.activationFunction = reLU_activationFunction;
 
-        this.mutationRate = 0.1;
+        this.mutationRate = 0.01;
         this.gaussianDistribution = {
             mean : 0,
             standard_deviation : 0.1
         };
 
-        this.input_nodes  = 2;
+        this.input_nodes  = 7 + simulator.terrain.describe().length;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = 2;
 
         this.nodes_datas = [
-            { max : -100, min : -100 }, // input_nodes  supposed max and min values
-            { max : 0, min :  0 }, // hidden_nodes supposed max and min values
-            { max : 0, min :  0 }  // output_nodes supposed max and min values
+            { max : -100, min : -100 }, // input_nodes supposed max and min values
+            { max : 0, min :  0 },      // hidden_nodes supposed max and min values
+            { max : 0, min :  0 }       // output_nodes supposed max and min values
         ];
         this.lander = null;
 
@@ -64,9 +64,22 @@ class NeuralNetworkControler extends Controler {
     * @param dt The delta time (in seconds)
     */
     update(dt) {
+        /*
+        * deltaTime
+        * position : x, y
+        * velocity : x, y
+        * engine : thrust, angle
+        * terrain : every x, y points
+        */
         let inputs = [
+            dt,
             this.lander.pos.x,
-            this.lander.pos.y
+            this.lander.pos.y,
+            this.lander.vel.x,
+            this.lander.vel.y,
+            this.lander.engine.thrustAmount,
+            this.lander.engine.thrustAngle,
+            ...this.simulator.terrain.describe()
         ];
 
         // Genotype

@@ -1,6 +1,8 @@
 class Controler {
     /** Abstract Controler class. Please do not call directly */
-    constructor() { }
+    constructor(simulator) {
+        this.simulator = simulator;
+    }
 
     /**
     * Updates the controler
