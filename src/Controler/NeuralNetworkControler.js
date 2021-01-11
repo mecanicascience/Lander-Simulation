@@ -9,9 +9,9 @@ class NeuralNetworkControler extends Controler {
         // Using ReLU activation function f(x) = max(0, x)
         let reLU_activationFunction    = x => x > 0 ? x : 0;
         let sigmoid_activationFunction = x => 1 / (1 + Math.exp(-x));
-        this.activationFunction = reLU_activationFunction;
+        this.activationFunction = sigmoid_activationFunction;
 
-        this.mutationRate = 0.01;
+        this.mutationRate = 0.1;
         this.gaussianDistribution = {
             mean : 0,
             standard_deviation : 0.1
@@ -97,7 +97,7 @@ class NeuralNetworkControler extends Controler {
     estimateFitness() {
         /** @TODO Create a better fitness function */
         // console.log(this.lander.flyTime);
-        return this.lander.flyTime;
+        return Math.exp(this.lander.flyTime);
     }
 
 

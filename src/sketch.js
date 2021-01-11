@@ -5,11 +5,11 @@ let initialConditions = [
 	-Math.PI * 0.2,      // initial engine angle
 	0                    // initial thrust amount
 ];
-let terrainPrecision = 50;
+let terrainPrecision = 3;
 
 function launchSimulation() {
 	let populationSize  = 50;
-	let hiddenNeurons   = 30;
+	let hiddenNeurons   = 50;
 	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
 	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
 

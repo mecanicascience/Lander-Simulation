@@ -49,7 +49,7 @@ class LanderEngine {
     * @param dThrust The delta of thrust
     */
     thrust(dThrust) {
-        let thrustRange = 0.8;
+        let thrustRange = 2;
 
         if (dThrust < -thrustRange)
             dThrust = -thrustRange;
