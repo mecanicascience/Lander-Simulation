@@ -7,7 +7,7 @@ let initialConditions = [
 ];
 let terrainPrecision = 10;
 let mutationRate = 0.1;
-let simulationSpeed = 3; // min = 1
+let simulationSpeed = 1; // min = 1
 
 function launchSimulation() {
 	let populationSize  = 100;

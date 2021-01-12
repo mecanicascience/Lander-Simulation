@@ -38,6 +38,7 @@ class Simulator {
 
         this.hasVesselCollided = false;
         this.neuralNetworkGeneration = 1;
+        this.updateCallNumber = 0;
         this.resetGUI();
     }
 
@@ -45,6 +46,9 @@ class Simulator {
 
     /** Updated simulation */
     update(dt) {
+        _pSimulationInstance.config.engine.runner.simulationSpeed = Math.round(this.simSpeedLab());
+        simulationSpeed = _pSimulationInstance.config.engine.runner.simulationSpeed;
+
         if (this.pauseState)
             return;
 
@@ -59,6 +63,8 @@ class Simulator {
         if (finished && this.simulationMode == 'neuralNetwork') {
             // Log
             this.debugLog(`== Generation ${this.neuralNetworkGeneration} data ==`);
+            this.debugLog(`This generation had ${this.landers.length} different landers`
+                + ` and called ${this.updateCallNumber} times the update() function.`);
 
             // Generate a new Terrain
             this.terrain.generate();
@@ -78,9 +84,13 @@ class Simulator {
             // New generation
             this.neuralNetworkGeneration += 1;
             this.hasVesselCollided = false;
+            this.updateCallNumber = 0;
             this.resetGUI();
 
             this.debugLog('=======================\n ');
+        }
+        else {
+            this.updateCallNumber++;
         }
     }
 
@@ -89,7 +99,7 @@ class Simulator {
         this.gui.reset();
         this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration + '');
         this.gui.addLabel('\\text{Update FPS}', Math.round(1/_pSimulationInstance.dtMoy) + '');
-        this.gui.addLabel('\\text{Sim speed}', simulationSpeed + '');
+        this.simSpeedLab = this.gui.addInput('\\text{Sim speed}', simulationSpeed, 1, 20);
         this.gui.addList(
             '\\text{Mode}',
             { 'Simulation' : 0, 'Controler' : 1 },
@@ -129,7 +139,10 @@ class Simulator {
 
         // Normalize every fitness values to have their sum equals to 1
         let fitSum = fitness.reduce((a, b) => a + b, 0);
-        this.debugLog(`Fitness datas : max = ${Math.round(fitnessDatas.max)}, min = ${Math.round(fitnessDatas.min)}, total = ${Math.round(fitSum)}`);
+        this.debugLog(`Fitness datas :`);
+        this.debugLog(`  - Maximum : ${Math.round(fitnessDatas.max)}`);
+        this.debugLog(`  - Minimum : ${Math.round(fitnessDatas.min)}`);
+        this.debugLog(`  - Total : ${Math.round(fitSum)}`);
 
         let fitnessNormalized = fitness.map(el => el / fitSum);
         this.debugLog(`Selected Vessel ${this.displayType.id} has a raw fitness of ${Math.round(fitness[this.displayType.id])}`
