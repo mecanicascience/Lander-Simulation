@@ -3,6 +3,7 @@ class Simulator {
     constructor(initialConditions, terrainPrecision) {
         this.shouldDrawState = true;
         this.pauseState      = true;
+        this.showDebugOutput = true;
 
         this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
@@ -56,6 +57,9 @@ class Simulator {
 
         // Go to next generation
         if (finished && this.simulationMode == 'neuralNetwork') {
+            // Log
+            this.debugLog(`== Generation ${this.neuralNetworkGeneration} data ==`);
+
             // Generate a new Terrain
             this.terrain.generate();
 
@@ -75,6 +79,8 @@ class Simulator {
             this.neuralNetworkGeneration += 1;
             this.hasVesselCollided = false;
             this.resetGUI();
+
+            this.debugLog('=======================\n ');
         }
     }
 
@@ -123,7 +129,12 @@ class Simulator {
 
         // Normalize every fitness values to have their sum equals to 1
         let fitSum = fitness.reduce((a, b) => a + b, 0);
+        this.debugLog(`Fitness datas : max = ${Math.round(fitnessDatas.max)}, min = ${Math.round(fitnessDatas.min)}, total = ${Math.round(fitSum)}`);
+
         let fitnessNormalized = fitness.map(el => el / fitSum);
+        this.debugLog(`Selected Vessel ${this.displayType.id} has a raw fitness of ${Math.round(fitness[this.displayType.id])}`
+            + `, that counts as ${Math.round(fitnessNormalized[this.displayType.id]*100)}% of total fitness.`);
+
 
 
         // Sum each values as a probabilistic matingpool [x0, x0 + x1, x0 + x1 + x2, ...]
@@ -133,6 +144,8 @@ class Simulator {
 
         // Pick next population IDs from the mating pool
         let newPopIDs = []; // [firstParentIDPair1, secondParentIDPair1, ...]
+        let selectedVesselChildren = 0;
+        let selectedVesselChildrenPar = [];
         for (let i = 0; i < curPop.length * 2; i++) {
             let r = random(0, 1);
             let j = 0;
@@ -142,8 +155,20 @@ class Simulator {
              // Parent can not reproduce themselfs alone
             if (i % 2 == 1 && newPopIDs[i - 1] == j)
                 i -= 1;
-            else
+            else {
                 newPopIDs.push(j);
+                if (newPopIDs[i - 1] == this.displayType.id)
+                    selectedVesselChildrenPar.push(j);
+                if (j == this.displayType.id)
+                    selectedVesselChildren++;
+            }
+        }
+        this.debugLog(`Selected Vessel ${this.displayType.id} will have ${selectedVesselChildren}/`
+            + `${newPopIDs.length/2} (${Math.round(selectedVesselChildren/newPopIDs.length/2*100)}%) children with :`);
+        for (let i = 0; i < selectedVesselChildrenPar.length; i++) {
+            let id = selectedVesselChildrenPar[i];
+            this.debugLog(`  - Vessel ${id} of fitness ${Math.round(fitness[id])}`
+                + ` (${Math.round(fitnessNormalized[id]*100)}%)`);
         }
 
         // Generate and mutate new population
@@ -195,6 +220,11 @@ class Simulator {
     /** Displays or hide the graphisms */
     shouldDraw(val) {
     	this.shouldDrawState = val;
+    }
+
+    debugLog(el) {
+        if (this.showDebugOutput)
+            console.log(el);
     }
 
 
