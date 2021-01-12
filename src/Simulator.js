@@ -8,6 +8,8 @@ class Simulator {
         this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
 
+        this.fitnessDrawer = new FitnessDrawer(this);
+
         this.landers     = [];
         this.displayType = {};
 
@@ -39,6 +41,7 @@ class Simulator {
         this.hasVesselCollided = false;
         this.neuralNetworkGeneration = 1;
         this.updateCallNumber = 0;
+        this.fitnessStats = [];
         this.resetGUI();
     }
 
@@ -102,14 +105,17 @@ class Simulator {
         this.simSpeedLab = this.gui.addInput('\\text{Sim speed}', simulationSpeed, 1, 20);
         this.gui.addList(
             '\\text{Mode}',
-            { 'Simulation' : 0, 'Controler' : 1 },
+            { 'Simulation' : 0, 'Controler' : 1, 'Fitness' : 2 },
             0, this.gui.datas.configuration,
-            (val) => sim.displays(val ? 'controler' : 'vessel', 0)
+            (val) => sim.displays(val ? (val == 1 ? 'controler' : 'fitness') : 'vessel', 0)
         );
         this.gui.addInput(
             '\\text{Selected ID}', this.displayType.id, 0, this.landers.length - 1,
             this.gui.datas.configuration,
-            (val) => sim.displays(this.displayType.type, Math.round(val))
+            (val) => {
+                sim.displayType.id = val;
+                sim.displays(this.displayType.type, Math.round(val));
+            }
         );
         this.gui.addCheckbox(
             '\\text{Pause}', false,
@@ -138,13 +144,21 @@ class Simulator {
         // Calculate fitness of the population
         let fitness = curPop.map(el => el.controler.estimateFitness());
         let fitnessDatas = { min : Math.min(...fitness), max : Math.max(...fitness) };
+        let fitSum = fitness.reduce((a, b) => a + b, 0);
+
+        let fitnessMoy = fitSum / curPop.length;
+        this.fitnessStats.push({
+            min : fitnessDatas.min,
+            max : fitnessDatas.max,
+            moy : fitnessMoy
+        });
 
 
         // Normalize every fitness values to have their sum equals to 1
-        let fitSum = fitness.reduce((a, b) => a + b, 0);
         this.debugLog(`Fitness datas :`);
         this.debugLog(`  - Maximum : ${Math.round(fitnessDatas.max)}`);
         this.debugLog(`  - Minimum : ${Math.round(fitnessDatas.min)}`);
+        this.debugLog(`  - Average : ${Math.round(fitnessMoy)}`);
         this.debugLog(`  - Total : ${Math.round(fitSum)}`);
 
         let fitnessNormalized = fitness.map(el => el / fitSum);
@@ -215,13 +229,18 @@ class Simulator {
         if (!this.shouldDrawState)
             return;
 
+        if (this.displayType.type == 'fitness') {
+            this.fitnessDrawer.draw(drawer);
+            return;
+        }
+
         if (this.displayType.type == 'vessel')
             this.terrain.draw(drawer);
 
         for (let i = 0; i < this.landers.length; i++) {
             if (this.displayType.type == 'vessel')
                 this.landers[i].draw(drawer, 'vessel', i == this.displayType.id);
-            else if (i == this.displayType.id)
+            else if (this.displayType.type == 'controler' && i == this.displayType.id)
                 this.landers[i].draw(drawer, 'controler', i == this.displayType.id)
         }
     }
@@ -246,7 +265,7 @@ class Simulator {
 
     /**
     * Changes the display mode
-    * @param type Type of the display ('vessel' or 'controler')
+    * @param type Type of the display ('vessel' or 'controler' or 'fitness')
     * @param id If type is 'controler', the id of the controler to be shown
     */
     displays(type, id = 0) {

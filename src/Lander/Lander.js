@@ -88,19 +88,22 @@ class Lander {
             this.simulator.hasVesselCollided = true;
         }
 
-        // Critical rotation angle cannot be overlaped
-        let criticalAngle = Math.PI / 3;
-        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle)
-            this.engine.thrustAngle = Math.sign(this.engine.thrustAngle) * criticalAngle;
-
         this.computePoints(dt);
     }
 
     computePoints(dt) {
-        // Time in flight, once the first vessel crashed
-        if (this.simulator.hasVesselCollided)
-            this.points += 10 * dt;
+        // Time in flight (+10 points / second)
+        this.points += 10 * dt;
 
+
+        // Critical rotation angle cannot be overlaped
+        let criticalAngle = Math.PI / 3;
+        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle) {
+            this.engine.thrustAngle = Math.sign(this.engine.thrustAngle) * criticalAngle;
+            this.points -= 3 * dt; // Bad action (-3 points / second)
+        }
+
+        // None negative total points
         if (this.points < 0)
             this.points = 0;
     }

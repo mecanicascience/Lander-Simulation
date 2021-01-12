@@ -8,8 +8,8 @@ class NeuralNetworkControler extends Controler {
 
         // Using ReLU activation function f(x) = max(0, x)
         let reLU_activationFunction    = x => x > 0 ? x : 0;
-        let sigmoid_activationFunction = x => 1 / (1 + Math.exp(-x));
-        this.activationFunction = reLU_activationFunction;
+        let sigmoid_activationFunction = x => 2 / (1 + Math.exp(-4.9*x)) - 1;
+        this.activationFunction = sigmoid_activationFunction;
 
         this.gaussianDistribution = {
             mean : 0,
