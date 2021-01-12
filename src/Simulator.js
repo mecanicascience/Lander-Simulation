@@ -1,7 +1,8 @@
 class Simulator {
     /** The main controler of the simulation */
     constructor(initialConditions, terrainPrecision) {
-        this.pauseState = true;
+        this.shouldDrawState = true;
+        this.pauseState      = true;
 
         this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
@@ -34,6 +35,7 @@ class Simulator {
                 throw new Error('There must be at least 3 Vessels in neuralNetwork simulation mode.')
         }
 
+        this.hasVesselCollided = false;
         this.neuralNetworkGeneration = 1;
         this.resetGUI();
     }
@@ -71,6 +73,7 @@ class Simulator {
 
             // New generation
             this.neuralNetworkGeneration += 1;
+            this.hasVesselCollided = false;
             this.resetGUI();
         }
     }
@@ -79,6 +82,8 @@ class Simulator {
     resetGUI() {
         this.gui.reset();
         this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration + '');
+        this.gui.addLabel('\\text{Update FPS}', Math.round(1/_pSimulationInstance.dtMoy) + '');
+        this.gui.addLabel('\\text{Sim speed}', simulationSpeed + '');
         this.gui.addList(
             '\\text{Mode}',
             { 'Simulation' : 0, 'Controler' : 1 },
@@ -93,6 +98,12 @@ class Simulator {
         this.gui.addCheckbox(
             '\\text{Pause}', false,
             (val) => val ? sim.pause() : sim.play()
+        );
+
+
+        this.gui.addCheckbox(
+            '\\text{Graphisms}', this.shouldDrawState,
+            (val) => sim.shouldDraw(val)
         );
     }
 
@@ -149,7 +160,7 @@ class Simulator {
             // Mutate child
             p3Controler.mutate();
 
-            newPop.push(new Lander(this.terrain, p3Controler));
+            newPop.push(new Lander(this, this.terrain, p3Controler));
         }
 
         return newPop;
@@ -160,6 +171,9 @@ class Simulator {
 
     /** Draws every object to the screen */
     draw(drawer) {
+        if (!this.shouldDrawState)
+            return;
+
         if (this.displayType.type == 'vessel')
             this.terrain.draw(drawer);
 
@@ -177,6 +191,11 @@ class Simulator {
 
     /** Plays the simulation */
     play()  { this.pauseState = false; }
+
+    /** Displays or hide the graphisms */
+    shouldDraw(val) {
+    	this.shouldDrawState = val;
+    }
 
 
     /**
@@ -205,7 +224,7 @@ class Simulator {
                 controler = new controlersClass[i](this, ...controlersArgs[i]);
             else
                 controler = new controlersClass[i](this);
-            this.landers.push(new Lander(this.terrain, controler));
+            this.landers.push(new Lander(this, this.terrain, controler));
         }
 
 
@@ -240,7 +259,7 @@ class Simulator {
                 controler = new HumanControler(this);
             }
 
-            let lander = new Lander(this.terrain, controler);
+            let lander = new Lander(this, this.terrain, controler);
             lander.initializeFromJSON(d);
             this.landers.push(lander);
             lander.controler.initializeFromJSON(this.landers[i], d.controler);
@@ -254,6 +273,10 @@ class Simulator {
         let res = [ ];
         for (let i = 0; i < this.landers.length; i++)
             res.push(this.landers[i].stringify());
-        return JSON.stringify(res);
+        let jsonStr = JSON.stringify(res);
+
+        let blob = new Blob([jsonStr], { type: 'text/plain' });
+        let url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
     }
 }

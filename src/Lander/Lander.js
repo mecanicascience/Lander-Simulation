@@ -4,7 +4,8 @@ class Lander {
     * @param terrain The reference of the terrain
     * @param controler The Lander controler
     */
-    constructor(terrain, controler) {
+    constructor(simulator, terrain, controler) {
+        this.simulator = simulator;
         this.terrain   = terrain;
         this.engine    = new LanderEngine();
         this.controler = controler;
@@ -82,26 +83,23 @@ class Lander {
         this.acc.add(netForces.div(this.m));
 
         // Computes and react to collisions
-        if (this.intersectWithBoundaries())
+        if (this.intersectWithBoundaries()) {
             this.collided = true;
-
-        // Angle between -critical and +critical
-        let criticalAngle = Math.PI / 2;
-        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle) {
-            this.points = this.points * 0.1;
-            this.collided = true;
+            this.simulator.hasVesselCollided = true;
         }
+
+        // Critical rotation angle cannot be overlaped
+        let criticalAngle = Math.PI / 3;
+        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle)
+            this.engine.thrustAngle = Math.sign(this.engine.thrustAngle) * criticalAngle;
 
         this.computePoints(dt);
     }
 
     computePoints(dt) {
-        // Time in flight
-        this.points += 100 * dt;
-
-        let criticalAngle = Math.PI / 3;
-        if (this.engine.thrustAngle > criticalAngle || this.engine.thrustAngle < -criticalAngle)
-            this.points -= 50 * dt;
+        // Time in flight, once the first vessel crashed
+        if (this.simulator.hasVesselCollided)
+            this.points += 10 * dt;
 
         if (this.points < 0)
             this.points = 0;

@@ -5,12 +5,13 @@ let initialConditions = [
 	0,   // initial engine angle
 	0    // initial thrust amount
 ];
-let terrainPrecision = 50;
+let terrainPrecision = 10;
 let mutationRate = 0.1;
+let simulationSpeed = 3; // min = 1
 
 function launchSimulation() {
 	let populationSize  = 100;
-	let hiddenNeurons   = 100;
+	let hiddenNeurons   = 20;
 	let controlers      = Array(populationSize).fill(NeuralNetworkControler);
 	let controlersDatas = Array(populationSize).fill([ hiddenNeurons ]);
 
@@ -33,6 +34,8 @@ function launchSimulation() {
 function runSimulator(simulator) {
 	simulator
 		.setEngineConfig((engineConf) => {
+			engineConf.runner.simulationSpeed = simulationSpeed;
+
 			engineConf.plotter.squareByX = true;
 			engineConf.plotter.displayGrid = false;
 			engineConf.plotter.scale = {
