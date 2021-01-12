@@ -3,7 +3,7 @@ class Simulator {
     constructor(initialConditions, terrainPrecision) {
         this.shouldDrawState = true;
         this.pauseState      = true;
-        this.showDebugOutput = true;
+        this.showDebugOutput = false;
 
         this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
@@ -116,10 +116,13 @@ class Simulator {
             (val) => val ? sim.pause() : sim.play()
         );
 
-
         this.gui.addCheckbox(
             '\\text{Graphisms}', this.shouldDrawState,
             (val) => sim.shouldDraw(val)
+        );
+        this.gui.addCheckbox(
+            '\\text{Debug Logs}', this.showDebugOutput,
+            (val) => sim.showDebugOutput = val
         );
     }
 
