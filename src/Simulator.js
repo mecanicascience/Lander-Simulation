@@ -312,8 +312,15 @@ class Simulator {
         let datas = JSON.parse(pop);
 
         for (let i = 0; i < datas.length; i++) {
-            let d = JSON.parse(datas[i]);
+            this.addVesselFromJSON(datas[i]);
+        }
 
+        this.initialize();
+    }
+
+    addVesselFromJSON(data, count) {
+        let d = JSON.parse(data);
+        for (let i = 0; i < count; i++) {
             let controler;
             if (d.controlerName == 'NeuralNetworkControler') {
                 controler = new NeuralNetworkControler(
@@ -327,10 +334,8 @@ class Simulator {
             let lander = new Lander(this, this.terrain, controler);
             lander.initializeFromJSON(d);
             this.landers.push(lander);
-            lander.controler.initializeFromJSON(this.landers[i], d.controler);
+            lander.controler.initializeFromJSON(this.landers[this.landers.length - 1], d.controler);
         }
-
-        this.initialize();
     }
 
     /** @return a String representation of the current Lander population */
