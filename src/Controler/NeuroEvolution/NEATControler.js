@@ -149,6 +149,50 @@ class NEATControler {
     }
 
 
+    makeChildWith(otherParent) {
+        let child = new NEATControler(this.simulator);
+        child.lander       = this.lander;
+        child.inputsSize   = this.inputsSize;
+        child.outputsSize  = this.outputsSize;
+
+        let connections = [];
+        let genes = [];
+
+        for (let i = 0; i < Math.max(this.genome.connections.length, otherParent.genome.connections.length); i++) {
+            if (this.genome.connections[i] != undefined && otherParent.genome.connections[i] != undefined) {
+                let r = random(); // same genes -> get from random parent
+                let c = r > 0.5 ? this.genome.connections[i] : otherParent.genome.connections[i];
+                if (!this.genome.connections[i].enabled && !otherParent.genome.connections[i].enabled) {
+                    // If genes disabled in both connection, reactivated in 25% cases
+                    let r2 = random();
+                    if (r2 < 0.25)
+                        c.enabled = true;
+                }
+                connections.push(c);
+            }
+            else if (this.genome.connections[i] != undefined)
+                connections.push(this.genome.connections[i]);
+            else
+                connections.push(otherParent.genome.connections[i]);
+        }
+
+        for (let i = 0; i < Math.max(this.genome.genes.length, otherParent.genome.genes.length); i++) {
+            if (this.genome.genes[i])
+                genes.push(this.genome.genes[i]);
+            else
+                otherParent.push(this.genome.genes[i]);
+        }
+
+        child.genome = { connections, genes };
+
+        return child;
+    }
+
+    mutate(mutationRate) {
+        
+    }
+
+
     draw(drawer) {
         // Resets drawing
         this.genome.connections.forEach((el, i) => el.drawn = false);
@@ -180,5 +224,21 @@ class NEATControler {
                 return this.genome.connections[i];
 
         return null;
+    }
+
+
+    copy() {
+        let controler = new NEATControler(this.simulator);
+        controler.speciesIndex = this.speciesIndex;
+        controler.lander       = this.lander;
+        controler.inputsSize   = this.inputsSize;
+        controler.outputsSize  = this.outputsSize;
+
+        controler.genome = {
+            connections : this.genome.connections.slice(),
+            genes       : this.genome.genes      .slice()
+        };
+
+        return controler;
     }
 }

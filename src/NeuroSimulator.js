@@ -16,8 +16,17 @@ class NeuroSimulator {
         this.species         = [ { elements : [] }];
         this.landers         = [];
 
-        this.speciesThreshold = 0.2; // 3
+        this.speciesThreshold = 3; // 3
         this.survivorRate     = 0.8;
+        this.mutationRate     = {
+            weights : {
+                global : 0.8,
+                newValue : 0.1,
+                uniform  : 0.9
+            },
+            connections : 0.3,
+            nodes : 0.03
+        };
 
         this.landersTotal = 5;
 
@@ -71,12 +80,12 @@ class NeuroSimulator {
             this.terrain.generate();
 
             // Generate new initial conditions
-            // this.initialConditions = [
-            //     new Vector(-70, 70), // r0
-            //     new Vector( 20, 10), // v0
-            //     0, // thrustAmount
-            //     0  // thrustAngle
-            // ];
+            this.initialConditions = [
+                new Vector(-70, 70), // r0
+                new Vector( 20, 10), // v0
+                0, // thrustAmount
+                0  // thrustAngle
+            ];
 
             // Evolve
             // Generate new species
@@ -87,14 +96,12 @@ class NeuroSimulator {
             this.killEstinctSpecies();
             // Reproduce landers
             this.reproduce();
+            // Kill species with no children
+            this.killUnfertileSpecies();
             // Mutations
             this.mutate();
 
             // New generation
-            this.landers.forEach(lander => {
-                lander.initialize(...this.initialConditions);
-            });
-
             this.generationCount += 1;
             this.updateCallNumber = 0;
             // this.resetGUI();
@@ -187,32 +194,123 @@ class NeuroSimulator {
     }
 
     reproduce() {
-        let newLanders = [];
-
         // Species children count
         let totalFitness = 0;
         for (let i = 0; i < this.species.length; i++)
             totalFitness += this.species[i].adjustedFitness;
 
+        let totalChildren  = 0;
         this.species.forEach(sp => {
-            sp.childrenCount = Math.round(sp.adjustedFitness / totalFitness * sim.landersTotal);
+            let c = Math.round(sp.adjustedFitness / totalFitness * sim.landersTotal);
+            sp.childrenCount = c;
+            totalChildren += c;
         });
-        console.log(totalFitness);
 
-        newLanders = this.landers;
-        // while (newLanders.length - 1 < this.landersTotal) {
-        //
-        // }
+        // If total children count doesn't add up, remove or add random children to random species
+        if (totalChildren != this.landersTotal) {
+            let delta = this.landersTotal - totalChildren;
+
+            for (let i = 0; i < Math.abs(delta); i++) {
+                this.species.sort(() => Math.random() - 0.5);
+                this.species[i].childrenCount += delta;
+            }
+        }
+
+        // Reproduce in each species
+        let newLanders = [];
+        this.species.forEach((sp, spIndex) => {
+            if (sp.childrenCount == 0)
+                return;
+
+            let newMembers = [];
+            sp.elements.sort((l1, l2) => l1.adjustedFitness - l2.adjustedFitness).reverse();
+            if (sp.elements[0].controler.genome.connections.length > 5) // keep best member unchanged
+                newMembers.push(this.copyLander(members.pop()));
+
+            // Normalize adjustedFitness
+            let totalLanderFitness = sp.elements.reduce((it, el) => it + el.adjustedFitness, 0);
+            let normAdjustedFitnessID = [];
+            sp.elements.forEach(lander => normAdjustedFitnessID.push(lander.adjustedFitness / totalLanderFitness));
+            for (let i = 1; i < normAdjustedFitnessID.length; i++)
+                normAdjustedFitnessID[i] += normAdjustedFitnessID[i - 1];
+
+            // Generate other children
+            for (let i = 0; i < sp.childrenCount - newMembers.length; i++) {
+                // If no vessel in the specie
+                if (sp.elements.length == 0) {
+                    if (newMembers.length == 0)
+                        return;
+                    else
+                        newMembers.push(this.copyLander(newMembers[0]));
+                    continue;
+                }
+                // If only one lander in the specie
+                if (sp.elements.length == 1) {
+                    newMembers.push(this.copyLander(sp.elements[0]));
+                    continue;
+                }
+
+                // Pick parent1
+                let r = random();
+                let id = 0;
+                while (r > normAdjustedFitnessID[id])
+                    id++;
+                let parent1 = this.copyLander(sp.elements[id]);
+
+                // Pick parent2
+                let parent2 = null;
+                let i = 0; // Security
+                while (parent2 == null || (parent2 == parent1 && i < 10000)) {
+                    let r2 = random();
+                    let id2 = 0;
+                    while (r2 > normAdjustedFitnessID[id2])
+                        id2++;
+                    parent2 = this.copyLander(sp.elements[id2]);
+
+                    i++;
+                }
+
+                if (i > 10000 - 5)
+                    console.error("The for loop choosing parent2 was breaked by force");
+
+                // Reproduce parent1 and parent2
+                newMembers.push(this.makeChild(parent1, parent2));
+            }
+
+            // Add newMembers to the list
+            for (let i = 0; i < newMembers.length; i++)
+                newMembers.speciesIndex = spIndex;
+            newMembers.forEach(m => newLanders.push(m));
+        });
 
         this.landers = newLanders;
     }
 
+    killUnfertileSpecies() {
+        // Species with 0 children are killed
+        let survivorSpecies = [];
+        this.species.forEach(sp => {
+            if (sp.elements.childrenCount != 0)
+                survivorSpecies.push(sp);
+        });
+        this.species = survivorSpecies;
+    }
+
     mutate() {
-        //
+        // Mutate every landers based on mutationRate
+        this.landers.forEach(lander => lander.controler.mutate(this.mutationRate));
     }
 
 
 
+    copyLander(lander) {
+        let newLander = new Lander(this, this.terrain, lander.controler.copy());
+
+        newLander.id = Math.round(random(100, 100000)); // used for debug
+        newLander.initialize(...this.initialConditions);
+
+        return newLander;
+    }
 
     deltaSpecies(lander1, lander2) {
         let c1 = 1;
@@ -225,13 +323,25 @@ class NeuroSimulator {
         if (n == 0)
             n = 1;
 
-        let genesDatas = lander1.controler.genesDatas(lander2.controler, n);
+        let genesDatas1 = lander1.controler.genesDatas(lander2.controler, n);
+        let genesDatas2 = lander2.controler.genesDatas(lander1.controler, n);
 
-        return c1 * genesDatas.excess   / n
-             + c2 * genesDatas.disjoint / n
-             + c3 * genesDatas.avgWeightsDiff;
+        return c1 * Math.max(genesDatas1.excess, genesDatas2.excess) / n
+             + c2 * Math.max(genesDatas1.disjoint, genesDatas2.disjoint) / n
+             + c3 * Math.max(genesDatas1.avgWeightsDiff, genesDatas2.avgWeightsDiff);
     }
 
+    makeChild(parent1, parent2) {
+        let newLander = new Lander(
+            this, this.terrain,
+            parent1.controler.makeChildWith(parent2.controler)
+        );
+
+        newLander.id = Math.round(random(100, 100000)); // used for debug
+        newLander.initialize(...this.initialConditions);
+
+        return newLander;
+    }
 
 
 
