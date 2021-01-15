@@ -22,7 +22,8 @@ class NeuroSimulator {
             weights : {
                 global : 0.8,
                 newValue : 0.1,
-                uniform  : 0.9
+                uniform  : 0.9,
+                uniformStandartVar : 0.05
             },
             connections : 0.3,
             nodes : 0.03

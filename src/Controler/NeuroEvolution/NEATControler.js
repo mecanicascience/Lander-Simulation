@@ -24,8 +24,6 @@ class NEATControler {
 
         for (let i = 0; i < outputsSize; i++)
             this.newGene(1, i * 2 / (outputsSize - 1) - 1, 'output');
-
-        this.newConnection(this.genome.genes[0], this.genome.genes[9]);
     }
 
 
@@ -189,7 +187,44 @@ class NEATControler {
     }
 
     mutate(mutationRate) {
-        
+        // Add node
+        let nodeR = random();
+        if (nodeR < mutationRate.nodes)
+            this.newGene(random(-1, 1), random(-1, 1));
+
+        // Add connection
+        let connectionR = random();
+        if (connectionR < mutationRate.connections) {
+            let unconnectedParts = [];
+            for (let i = 0; i < this.genome.genes.length; i++) {
+                for (let j = 0; j < this.genome.genes.length; j++) {
+                    if (!this.genome.genes[i].hasConnectionWith(this.genome.genes[j]))
+                        unconnectedParts.push([i, j]);
+                }
+            }
+
+            let r = Math.round(random(0, unconnectedParts.length - 1));
+            let fromNode = this.genome.genes[unconnectedParts[r]][0];
+            let toNode   = this.genome.genes[unconnectedParts[r]][1];
+            if (toNode.pos.x < fromNode.pos.x) {
+                fromNode = this.genome.genes[unconnectedParts[r]][1];
+                toNode   = this.genome.genes[unconnectedParts[r]][0];
+            }
+
+            this.newConnection(fromNode, toNode);
+        }
+
+        // Weights mutation
+        for (let i = 0; i < this.genome.connections.length; i++) {
+            let weightR = random();
+            if (weightR < mutationRate.weights.global) {
+                let weightR2 = random();
+                if (weightR2 < mutationRate.weights.uniform)
+                    this.genome.connections[i].weight += randomGaussian(0, mutationRate.weights.uniformStandartVar);
+                else
+                    this.genome.connections[i].weight = random(-1, 1);
+            }
+        }
     }
 
 

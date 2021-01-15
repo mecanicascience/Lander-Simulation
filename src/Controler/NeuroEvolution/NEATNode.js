@@ -30,6 +30,16 @@ class NEATNode {
         this.prediction = null;
     }
 
+    hasConnectionWith(node) {
+        for (let i = 0; i < this.connections.length; i++) {
+            if (
+                   this.connections[i].nodeFrom == node
+                || this.connections[i].nodeTo   == node
+            ) return true;
+        }
+        return false;
+    }
+
 
     draw(drawer, confScale) {
         this.drawn = true;
