@@ -44,7 +44,8 @@ class Lander {
             new Vector(-1.3, -2.2)
         ];
 
-        this.points = 0;
+        this.collided = false;
+        this.points   = 0;
     }
 
     /**

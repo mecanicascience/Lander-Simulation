@@ -15,8 +15,8 @@ class Simulator {
 
         this.initialConditions = initialConditions;
 
-        // neuralNetwork' for generative neural network, 'player' for a player mode
-        this.simulationMode = 'neuralNetwork';
+        // 'neuroEvolution' / 'neuralNetwork' for generative neural network, 'player' for a player mode
+        this.simulationMode = 'neuroEvolution';
         this.neuralNetworkGeneration = 0;
 
         this.gui = new OptionsGUI();
