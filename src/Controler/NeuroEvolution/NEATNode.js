@@ -2,7 +2,7 @@ class NEATNode {
     constructor(pos, id, type) {
         this.pos  = pos;
         this.id   = id;
-        this.type = type; // inputs / output / cell
+        this.type = type; // input / output / cell
 
         this.prediction = null;
 
@@ -33,8 +33,22 @@ class NEATNode {
     hasConnectionWith(node) {
         for (let i = 0; i < this.connections.length; i++) {
             if (
-                   this.connections[i].nodeFrom == node
-                || this.connections[i].nodeTo   == node
+                (
+                       this.connections[i].nodeFrom == node
+                    || this.connections[i].nodeTo   == node
+                )
+                &&
+                (
+                    (
+                           this.connections[i].nodeFrom.type != 'input'
+                        && this.connections[i].nodeFrom.type != 'output'
+                    )
+                    ||
+                    (
+                           this.connections[i].nodeTo.type != 'input'
+                        && this.connections[i].nodeTo.type != 'output'
+                    )
+                )
             ) return true;
         }
         return false;

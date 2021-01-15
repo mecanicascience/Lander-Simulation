@@ -236,7 +236,8 @@ class NeuroSimulator {
                 normAdjustedFitnessID[i] += normAdjustedFitnessID[i - 1];
 
             // Generate other children
-            for (let i = 0; i < sp.childrenCount - newMembers.length; i++) {
+            let maxIt = sp.childrenCount - newMembers.length;
+            for (let jIt = 0; jIt < maxIt; jIt++) {
                 // If no vessel in the specie
                 if (sp.elements.length == 0) {
                     if (newMembers.length == 0)
@@ -260,18 +261,18 @@ class NeuroSimulator {
 
                 // Pick parent2
                 let parent2 = null;
-                let i = 0; // Security
-                while (parent2 == null || (parent2 == parent1 && i < 10000)) {
+                let i2 = 0; // Security
+                while (parent2 == null || (parent2 == parent1 && i2 < 10000)) {
                     let r2 = random();
                     let id2 = 0;
                     while (r2 > normAdjustedFitnessID[id2])
                         id2++;
                     parent2 = this.copyLander(sp.elements[id2]);
 
-                    i++;
+                    i2++;
                 }
 
-                if (i > 10000 - 5)
+                if (i2 > 10000 - 5)
                     console.error("The for loop choosing parent2 was breaked by force");
 
                 // Reproduce parent1 and parent2

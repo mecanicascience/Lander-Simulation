@@ -204,11 +204,11 @@ class NEATControler {
             }
 
             let r = Math.round(random(0, unconnectedParts.length - 1));
-            let fromNode = this.genome.genes[unconnectedParts[r]][0];
-            let toNode   = this.genome.genes[unconnectedParts[r]][1];
+            let fromNode = this.genome.genes[unconnectedParts[r][0]];
+            let toNode   = this.genome.genes[unconnectedParts[r][1]];
             if (toNode.pos.x < fromNode.pos.x) {
-                fromNode = this.genome.genes[unconnectedParts[r]][1];
-                toNode   = this.genome.genes[unconnectedParts[r]][0];
+                fromNode = this.genome.genes[unconnectedParts[r][1]];
+                toNode   = this.genome.genes[unconnectedParts[r][0]];
             }
 
             this.newConnection(fromNode, toNode);
