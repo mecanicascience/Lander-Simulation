@@ -78,9 +78,9 @@ class NEATControler {
 
 
     newGene(x, y, type = 'cell') {
-        this.genome.genes.push(
-            new NEATNode(new Vector(x, y), this.genome.genes.length, type)
-        );
+        let node = new NEATNode(new Vector(x, y), this.genome.genes.length, type);
+        this.genome.genes.push(node);
+        return node;
     }
 
     newConnection(nodeFrom, nodeTo, weight = random(-1, 1), enabled = true) {
@@ -212,10 +212,18 @@ class NEATControler {
     mutate(mutationRate) {
         // Add node
         let nodeR = random();
-        if (nodeR < mutationRate.nodes && this.genome.connections.length > 0) {
-            let r = Math.round(random(0, this.genome.connections.length - 1));
-            /** @TODO */
-            
+        let conn = this.getEnabledConnections();
+        if (nodeR < mutationRate.nodes && conn.length > 0) {
+            let r = Math.round(random(0, conn.length - 1));
+            let x = (conn[r].nodeFrom.x + conn[r].nodeTo.x) / 2;
+            let y = (conn[r].nodeFrom.y + conn[r].nodeTo.y) / 2;
+
+            let newNode = this.newGene(x, y);
+
+            this.newConnection(conn[r].nodeFrom, newNode, 1);
+            this.newConnection(newNode, conn[r].nodeTo, conn[r].weight);
+
+            conn[r].enabled = false;
         }
 
         // Add connection
@@ -287,6 +295,15 @@ class NEATControler {
                 return this.genome.connections[i];
 
         return null;
+    }
+
+    getEnabledConnections() {
+        let enabledConnection = [];
+        for (let i = 0; i < this.genome.connections.length; i++) {
+            if (this.genome.connections[i].enabled)
+                enabledConnection.push(this.genome.connections[i]);
+        }
+        return enabledConnection;
     }
 
 

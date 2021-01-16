@@ -15,6 +15,9 @@ class NEATConnection {
         let col = this.weight > 0 ? [70, 200, 70] : [200, 70, 70];
         col[3] = Math.round(Math.abs(this.weight) * 255);
 
+        if (!this.enabled)
+            col = [70, 70, 70];
+
         drawer
             .noFill()
             .stroke(col)
