@@ -84,9 +84,32 @@ class NEATControler {
     }
 
     newConnection(nodeFrom, nodeTo, weight = random(-1, 1), enabled = true) {
+        if (
+               (nodeFrom.type == 'input'  && nodeTo.type  == 'input')
+            || (nodeFrom.type == 'output' && nodeTo.type  == 'output')
+        )   return;
+
         // Computes innovationNumber
-        /** @TODO */
-        let innovationNumber = 0;
+        let innovationNumber = null;
+        for (let i = 0; i < this.simulator.innovationsList.length; i++) {
+            if (
+                   this.simulator.innovationsList[i].from.x == nodeFrom.pos.x
+                && this.simulator.innovationsList[i].from.y == nodeFrom.pos.y
+                && this.simulator.innovationsList[i].to.x == nodeTo.pos.x
+                && this.simulator.innovationsList[i].to.y == nodeTo.pos.y
+            ) innovationNumber = this.simulator.innovationsList[i].innovationNumber;
+        }
+        if (innovationNumber == null) {
+            this.globalInnovationNumber++;
+            innovationNumber = this.globalInnovationNumber;
+
+            this.simulator.innovationsList.push({
+                from : { x : nodeFrom.pos.x, y : nodeFrom.pos.y },
+                to   : { x : nodeTo  .pos.x, y : nodeTo  .pos.y },
+                innovationNumber : innovationNumber
+            });
+        }
+
 
         // Connection
         let conn = new NEATConnection(nodeFrom, nodeTo, weight, enabled, innovationNumber);
@@ -189,8 +212,10 @@ class NEATControler {
     mutate(mutationRate) {
         // Add node
         let nodeR = random();
-        if (nodeR < mutationRate.nodes)
-            this.newGene(random(-1, 1), random(-1, 1));
+        if (nodeR < mutationRate.nodes && this.genome.connections.length > 0) {
+            let r = Math.round(random(0, this.genome.connections.length - 1));
+            /** @TODO */
+        }
 
         // Add connection
         let connectionR = random();
@@ -203,15 +228,17 @@ class NEATControler {
                 }
             }
 
-            let r = Math.round(random(0, unconnectedParts.length - 1));
-            let fromNode = this.genome.genes[unconnectedParts[r][0]];
-            let toNode   = this.genome.genes[unconnectedParts[r][1]];
-            if (toNode.pos.x < fromNode.pos.x) {
-                fromNode = this.genome.genes[unconnectedParts[r][1]];
-                toNode   = this.genome.genes[unconnectedParts[r][0]];
-            }
+            if (unconnectedParts.length != 0) {
+                let r = Math.round(random(0, unconnectedParts.length - 1));
+                let fromNode = this.genome.genes[unconnectedParts[r][0]];
+                let toNode   = this.genome.genes[unconnectedParts[r][1]];
+                if (toNode.pos.x < fromNode.pos.x) {
+                    fromNode = this.genome.genes[unconnectedParts[r][1]];
+                    toNode   = this.genome.genes[unconnectedParts[r][0]];
+                }
 
-            this.newConnection(fromNode, toNode);
+                this.newConnection(fromNode, toNode);
+            }
         }
 
         // Weights mutation
