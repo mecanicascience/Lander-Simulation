@@ -178,7 +178,7 @@ class NEATControler {
             if (this.genome.genes[i])
                 genes.push(this.genome.genes[i]);
             else
-                otherParent.push(this.genome.genes[i]);
+                genes.push(otherParent.genome.genes[i]);
         }
 
         child.genome = { connections, genes };

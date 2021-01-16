@@ -32,7 +32,7 @@ function launchSimulation() {
 	// sim.newPopulation(populationSize, controlersNE, controlersDatasNE);
 
 	sim.displays('lander');
-	sim.displays('controler');
+	// sim.displays('controler');
 	sim.play();
 
 	// Save and load population to console to a String

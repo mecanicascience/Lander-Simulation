@@ -48,8 +48,8 @@ class NeuroSimulator {
         ];
 
 
-        // this.gui = new OptionsGUI();
-        // this.resetGUI();
+        this.gui = new OptionsGUI();
+        this.resetGUI();
     }
 
     initialize() {
@@ -67,13 +67,16 @@ class NeuroSimulator {
 
 
     update(dt) {
+        _pSimulationInstance.config.engine.runner.simulationSpeed = Math.round(this.simSpeedLab());
+        simulationSpeed = _pSimulationInstance.config.engine.runner.simulationSpeed;
+
         if (this.pauseState)
             return;
 
         this.landers.forEach(el => el.update(dt));
 
         if (this.landers.every(el => el.collided)) {
-            this.debugLog(`== Generation ${this.generationCount} data ==`);
+            this.debugLog(`== Generation ${this.generationCount+1} data ==`);
             this.debugLog(`This generation had ${this.landers.length} different landers`
                 + ` and called ${this.updateCallNumber} times the update() function.`);
 
@@ -105,10 +108,9 @@ class NeuroSimulator {
             // New generation
             this.generationCount += 1;
             this.updateCallNumber = 0;
-            // this.resetGUI();
-            noLoop();
-            console.log(this.species);
-            console.log(this.landers);
+            this.resetGUI();
+            this.debugLog('Species :', this.species);
+            this.debugLog('Children :', this.landers);
 
             this.debugLog('=======================\n ');
         }
@@ -226,7 +228,7 @@ class NeuroSimulator {
             let newMembers = [];
             sp.elements.sort((l1, l2) => l1.adjustedFitness - l2.adjustedFitness).reverse();
             if (sp.elements[0].controler.genome.connections.length > 5) // keep best member unchanged
-                newMembers.push(this.copyLander(members.pop()));
+                newMembers.push(this.copyLander(sp.elements.pop()));
 
             // Normalize adjustedFitness
             let totalLanderFitness = sp.elements.reduce((it, el) => it + el.adjustedFitness, 0);
@@ -382,22 +384,22 @@ class NeuroSimulator {
         this.shouldDrawState = val;
     }
 
-    debugLog(el) {
+    debugLog(...el) {
         if (this.showDebugOutput)
-            console.log(el);
+            console.log(...el);
     }
 
     /** Resets the GUI */
     resetGUI() {
         this.gui.reset();
-        this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration + '');
+        this.gui.addLabel('\\text{Generation}', this.generationCount + '');
         this.gui.addLabel('\\text{Update FPS}', Math.round(1/_pSimulationInstance.dtMoy) + '');
         this.simSpeedLab = this.gui.addInput('\\text{Sim speed}', simulationSpeed, 1, 20);
         this.gui.addList(
             '\\text{Mode}',
-            { 'Lander' : 0, 'Network' : 1 },
+            { 'Lander' : 0, 'Controler' : 1 },
             0, this.gui.datas.configuration,
-            (val) => sim.displays(val ? 'network' : 'lander', 0)
+            (val) => sim.displays(val ? 'controler' : 'lander', 0)
         );
         this.gui.addInput(
             '\\text{Selected ID}', this.displayType.id, 0, this.landers.length - 1,
