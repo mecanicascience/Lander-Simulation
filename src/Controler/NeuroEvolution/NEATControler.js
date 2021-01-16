@@ -215,6 +215,7 @@ class NEATControler {
         if (nodeR < mutationRate.nodes && this.genome.connections.length > 0) {
             let r = Math.round(random(0, this.genome.connections.length - 1));
             /** @TODO */
+            
         }
 
         // Add connection
