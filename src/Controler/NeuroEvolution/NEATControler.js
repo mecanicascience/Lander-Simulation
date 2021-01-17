@@ -25,7 +25,12 @@ class NEATControler {
         for (let i = 0; i < outputsSize; i++)
             this.newGene(1, (outputsSize - i - 1) * 2 / (outputsSize - 1) - 1, 'output');
 
-        this.newConnection(this.getNode(0), this.getNode(10));
+        if (random() > 0.5)
+            this.newConnection(this.getNode(0), this.getNode(10));
+        if (random() > 0.5)
+            this.newConnection(this.getNode(2), this.getNode(9));
+        if (random() > 0.5)
+            this.newConnection(this.getNode(5), this.getNode(7));
     }
 
 
@@ -129,30 +134,27 @@ class NEATControler {
 
 
 
-    maxLocalGenesInnovationNumber() {
-        if (this.genome.connections.length == 0)
-            return 0;
-        return this.genome.connections[this.genome.connections.length - 1].innovationNumber;
-    }
 
 
-    genesDatas(otherCont, maxLocalGenesNb) {
+    genesDatas(otherCont, maxLocalGenesNb, minLocalGenesNb) {
         let disjointCount = 0;
         let excessCount   = 0;
         let weightDiff    = 0;
         let weightCommun  = 0;
 
-        for (let i = 0; i < this.genome.connections.length; i++) {
-            let w = otherCont.getGeneInnovationID(this.genome.connections[i].innovationNumber);
-            if (w != null) {
-                weightDiff += Math.abs(w.weight - this.genome.connections[i].weight);
+        for (let i = 0; i < maxLocalGenesNb+1; i++) {
+            let otherGene = otherCont.getGeneInnovationID(i);
+            let thisGene  = this.getGeneInnovationID(i);
+
+            if (otherGene != null && thisGene != null) {
+                weightDiff += Math.abs(otherGene.weight - thisGene.weight);
                 weightCommun++;
             }
-            else {
-                if (i <= maxLocalGenesNb)
-                    disjointCount++;
+            else if ((otherGene == null || thisGene == null) && !(otherGene == null && thisGene == null)) { // XOR
+                if (i > minLocalGenesNb)
+                    excessCount += 1;
                 else
-                    excessCount++;
+                    disjointCount += 1;
             }
         }
 
@@ -305,11 +307,22 @@ class NEATControler {
         return enabledConnection;
     }
 
+    maxLocalGenesInnovationNumber() {
+        if (this.genome.connections.length == 0)
+            return 0;
+
+        let max = 0;
+        for (let i = 0; i < this.genome.connections.length; i++) {
+            if (this.genome.connections[i].innovationNumber > max)
+                max = this.genome.connections[i].innovationNumber;
+        }
+        return max;
+    }
+
 
     copy() {
         let controler = new NEATControler(this.simulator);
         controler.speciesIndex = this.speciesIndex;
-        controler.lander       = this.lander;
         controler.inputsSize   = this.inputsSize;
         controler.outputsSize  = this.outputsSize;
 
