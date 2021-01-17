@@ -103,7 +103,7 @@ class NeuroSimulator {
             // Kill species with no children
             this.killUnfertileSpecies();
             // Mutations
-            // this.mutate();
+            this.mutate();
             noLoop();
 
             // New generation

@@ -31,6 +31,12 @@ class NEATControler {
             this.newConnection(this.getNode(2), this.getNode(9));
         if (random() > 0.5)
             this.newConnection(this.getNode(5), this.getNode(7));
+        if (random() > 0.5)
+            this.newGene(random(-1, 1), random(-1, 1));
+        if (random() > 0.5)
+            this.newGene(random(-1, 1), random(-1, 1));
+        if (random() > 0.5)
+            this.newGene(random(-1, 1), random(-1, 1));
     }
 
 
@@ -84,6 +90,7 @@ class NEATControler {
 
 
 
+
     newGene(x, y, type = 'cell') {
         let node = new NEATNode(new Vector(x, y), this.genome.genes.length, type);
         this.genome.genes.push(node);
@@ -124,17 +131,6 @@ class NEATControler {
 
 
 
-    getNode(nodeID) {
-        for (let i = 0; i < this.genome.genes.length; i++) {
-            if (this.genome.genes[i].id == nodeID)
-                return this.genome.genes[i];
-        }
-        return null;
-    }
-
-
-
-
 
     genesDatas(otherCont, maxLocalGenesNb, minLocalGenesNb) {
         let disjointCount = 0;
@@ -171,38 +167,53 @@ class NEATControler {
 
     makeChildWith(otherParent) {
         let child = new NEATControler(this.simulator);
-        child.lander       = this.lander;
-        child.inputsSize   = this.inputsSize;
-        child.outputsSize  = this.outputsSize;
+        child.inputsSize  = this.inputsSize;
+        child.outputsSize = this.outputsSize;
 
+        let maxGeneP1 = this.maxLocalGenesInnovationNumber();
+        let maxGeneP2 = otherParent.maxLocalGenesInnovationNumber();
+
+        let maxGene = Math.max(maxGeneP1, maxGeneP2);
+        let minGene = Math.min(maxGeneP1, maxGeneP2);
+
+        // Create connections child array
         let connections = [];
-        let genes = [];
+        for (let i = 0; i < maxGene+1; i++) {
+            let otherGene = otherParent.getGeneInnovationID(i);
+            let thisGene  = this.getGeneInnovationID(i);
 
-        for (let i = 0; i < Math.max(this.genome.connections.length, otherParent.genome.connections.length); i++) {
-            if (this.genome.connections[i] != undefined && otherParent.genome.connections[i] != undefined) {
+            if (otherGene != null && thisGene != null) { // Connection in commun
                 let r = random(); // same genes -> get from random parent
-                let c = r > 0.5 ? this.genome.connections[i] : otherParent.genome.connections[i];
-                if (!this.genome.connections[i].enabled && !otherParent.genome.connections[i].enabled) {
+                let conn = r > 0.5 ? thisGene : otherGene;
+                if (!thisGene.enabled && !otherGene.enabled) {
                     // If genes disabled in both connection, reactivated in 25% cases
-                    let r2 = random();
-                    if (r2 < 0.25)
-                        c.enabled = true;
+                    if (random() < 0.25)
+                        conn.enabled = true;
                 }
-                connections.push(c);
+                connections.push(conn);
             }
-            else if (this.genome.connections[i] != undefined)
-                connections.push(this.genome.connections[i]);
-            else
-                connections.push(otherParent.genome.connections[i]);
+            else if ((otherGene == null || thisGene == null) && !(otherGene == null && thisGene == null)) { // XOR
+                // Excess or disjoint
+                if (otherGene != null)
+                    connections.push(otherGene);
+                else
+                    connections.push(thisGene);
+            }
         }
 
-        for (let i = 0; i < Math.max(this.genome.genes.length, otherParent.genome.genes.length); i++) {
-            if (this.genome.genes[i])
-                genes.push(this.genome.genes[i]);
-            else
-                genes.push(otherParent.genome.genes[i]);
+        // Create an array for the child with no duplicate genes
+        let genesToCheck = this.genome.genes.concat(otherParent.genome.genes);
+        let genes = [];
+        for (let i = 0; i < genesToCheck.length; i++) {
+            let found = false;
+            for (let j = 0; j < genes.length; j++) {
+                if (   genes[j].pos.x == genesToCheck[i].pos.x
+                    && genes[j].pos.y == genesToCheck[i].pos.y
+                ) found = true;
+            }
+            if (!found)
+                genes.push(genesToCheck[i]);
         }
-
         child.genome = { connections, genes };
 
         return child;
@@ -290,6 +301,8 @@ class NEATControler {
     }
 
 
+
+
     getGeneInnovationID(id) {
         for (let i = 0; i < this.genome.connections.length; i++)
             if (this.genome.connections[i].innovationNumber == id)
@@ -307,6 +320,14 @@ class NEATControler {
         return enabledConnection;
     }
 
+    getNode(nodeID) {
+        for (let i = 0; i < this.genome.genes.length; i++) {
+            if (this.genome.genes[i].id == nodeID)
+                return this.genome.genes[i];
+        }
+        return null;
+    }
+
     maxLocalGenesInnovationNumber() {
         if (this.genome.connections.length == 0)
             return 0;
@@ -318,6 +339,8 @@ class NEATControler {
         }
         return max;
     }
+
+
 
 
     copy() {
