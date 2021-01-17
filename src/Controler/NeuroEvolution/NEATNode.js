@@ -17,8 +17,9 @@ class NEATNode {
         // Calculate prediction
         this.prediction = 0;
         for (let i = 0; i < this.connections.length; i++) {
-            if (this.connections[i].to == this)
-                this.prediction += this.connections[i].weight * c.predict(activationFunction);
+            let c = this.connections[i];
+            if (c.nodeTo == this)
+                this.prediction += c.weight * c.nodeFrom.predict(activationFunction);
         }
 
         this.prediction = activationFunction(this.prediction);

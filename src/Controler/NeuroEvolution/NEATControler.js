@@ -20,10 +20,12 @@ class NEATControler {
         this.outputsSize = outputsSize;
 
         for (let i = 0; i < inputsSize; i++)
-            this.newGene(-1, i * 2 / (inputsSize - 1) - 1, 'input');
+            this.newGene(-1, (inputsSize - i - 1) * 2 / (inputsSize - 1) - 1, 'input');
 
         for (let i = 0; i < outputsSize; i++)
-            this.newGene(1, i * 2 / (outputsSize - 1) - 1, 'output');
+            this.newGene(1, (outputsSize - i - 1) * 2 / (outputsSize - 1) - 1, 'output');
+
+        this.newConnection(this.getNode(0), this.getNode(10));
     }
 
 
@@ -69,10 +71,10 @@ class NEATControler {
 
         // Phenotype
         // [ rotationX, rotationY, thrustUp, thrustDown ]
-        this.lander.engine.rotate( prediction[0] * dt);
-        this.lander.engine.rotate(-prediction[1] * dt);
-        this.lander.engine.thrust( prediction[2] * dt);
-        this.lander.engine.thrust(-prediction[3] * dt);
+        this.lander.engine.rotate( prediction[0] * dt * Math.PI);
+        this.lander.engine.rotate(-prediction[1] * dt * Math.PI);
+        this.lander.engine.thrust( prediction[2] * dt * 1000);
+        this.lander.engine.thrust(-prediction[3] * dt * 1000);
     }
 
 
@@ -84,11 +86,6 @@ class NEATControler {
     }
 
     newConnection(nodeFrom, nodeTo, weight = random(-1, 1), enabled = true) {
-        if (
-               (nodeFrom.type == 'input'  && nodeTo.type  == 'input')
-            || (nodeFrom.type == 'output' && nodeTo.type  == 'output')
-        )   return;
-
         // Computes innovationNumber
         let innovationNumber = null;
         for (let i = 0; i < this.simulator.innovationsList.length; i++) {
@@ -100,8 +97,8 @@ class NEATControler {
             ) innovationNumber = this.simulator.innovationsList[i].innovationNumber;
         }
         if (innovationNumber == null) {
-            this.globalInnovationNumber++;
-            innovationNumber = this.globalInnovationNumber;
+            this.simulator.globalInnovationNumber++;
+            innovationNumber = this.simulator.globalInnovationNumber;
 
             this.simulator.innovationsList.push({
                 from : { x : nodeFrom.pos.x, y : nodeFrom.pos.y },
@@ -246,7 +243,9 @@ class NEATControler {
                     toNode   = this.genome.genes[unconnectedParts[r][0]];
                 }
 
-                this.newConnection(fromNode, toNode);
+                if (!(   (fromNode.type == 'input'  && toNode.type == 'input')
+                      || (fromNode.type == 'output' && toNode.type == 'output'))
+                ) this.newConnection(fromNode, toNode);
             }
         }
 
