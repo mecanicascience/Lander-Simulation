@@ -17,7 +17,7 @@ class NeuroSimulator {
         this.landers         = [];
 
         this.speciesThreshold = 3;
-        this.survivorRate     = 0.8;
+        this.survivorRate     = 0.9;
         this.mutationRate     = {
             weights : {
                 global : 0.8,
@@ -29,7 +29,7 @@ class NeuroSimulator {
             nodes : 0.03
         };
 
-        this.landersTotal = 5;
+        this.landersTotal = 200;
 
         for (let i = 0; i < this.landersTotal; i++) {
             let lander = new Lander(this, this.terrain, new NEATControler(this));
