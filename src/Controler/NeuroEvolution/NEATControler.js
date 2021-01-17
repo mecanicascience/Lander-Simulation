@@ -221,24 +221,22 @@ class NEATControler {
 
     mutate(mutationRate) {
         // Add node
-        let nodeR = random();
-        let conn = this.getEnabledConnections();
-        if (nodeR < mutationRate.nodes && conn.length > 0) {
-            let r = Math.round(random(0, conn.length - 1));
-            let x = (conn[r].nodeFrom.x + conn[r].nodeTo.x) / 2;
-            let y = (conn[r].nodeFrom.y + conn[r].nodeTo.y) / 2;
+        let enabledConn = this.getEnabledConnections();
+        if (random() < mutationRate.nodes && enabledConn.length > 0) {
+            let eCo = enabledConn[Math.round(random(0, enabledConn.length - 1))];
+            let newNode = this.newGene(
+                (eCo.nodeFrom.pos.x + eCo.nodeTo.pos.x) / 2,
+                (eCo.nodeFrom.pos.y + eCo.nodeTo.pos.y) / 2
+            );
 
-            let newNode = this.newGene(x, y);
+            this.newConnection(eCo.nodeFrom, newNode, 1);
+            this.newConnection(newNode, eCo.nodeTo, eCo.weight);
 
-            this.newConnection(conn[r].nodeFrom, newNode, 1);
-            this.newConnection(newNode, conn[r].nodeTo, conn[r].weight);
-
-            conn[r].enabled = false;
+            eCo.enabled = false;
         }
 
         // Add connection
-        let connectionR = random();
-        if (connectionR < mutationRate.connections) {
+        if (random() < mutationRate.connections) {
             let unconnectedParts = [];
             for (let i = 0; i < this.genome.genes.length; i++) {
                 for (let j = 0; j < this.genome.genes.length; j++) {
@@ -251,24 +249,32 @@ class NEATControler {
                 let r = Math.round(random(0, unconnectedParts.length - 1));
                 let fromNode = this.genome.genes[unconnectedParts[r][0]];
                 let toNode   = this.genome.genes[unconnectedParts[r][1]];
+
                 if (toNode.pos.x < fromNode.pos.x) {
                     fromNode = this.genome.genes[unconnectedParts[r][1]];
                     toNode   = this.genome.genes[unconnectedParts[r][0]];
                 }
 
-                if (!(   (fromNode.type == 'input'  && toNode.type == 'input')
-                      || (fromNode.type == 'output' && toNode.type == 'output'))
+                // No connection 'input' / 'input' or 'output' / 'output'
+                if (
+                        fromNode.type == 'cell'
+                    ||  toNode  .type == 'cell'
+                    || (fromNode.type == 'input'  && toNode.type != 'input')
+                    || (fromNode.type == 'output' && toNode.type != 'output')
                 ) this.newConnection(fromNode, toNode);
             }
         }
 
         // Weights mutation
         for (let i = 0; i < this.genome.connections.length; i++) {
-            let weightR = random();
-            if (weightR < mutationRate.weights.global) {
-                let weightR2 = random();
-                if (weightR2 < mutationRate.weights.uniform)
+            if (random() < mutationRate.weights.global) {
+                if (random() < mutationRate.weights.uniform) {
                     this.genome.connections[i].weight += randomGaussian(0, mutationRate.weights.uniformStandartVar);
+                    if (this.genome.connections[i].weight > 1)
+                        this.genome.connections[i].weight = 1;
+                    if (this.genome.connections[i].weight < -1)
+                        this.genome.connections[i].weight = -1;
+                }
                 else
                     this.genome.connections[i].weight = random(-1, 1);
             }

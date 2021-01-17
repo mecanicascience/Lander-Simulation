@@ -34,18 +34,6 @@ class NEATNode {
     hasConnectionWith(node) {
         for (let i = 0; i < this.connections.length; i++) {
             if (
-                (
-                      this.connections[i].nodeFrom.type == 'input'
-                   || this.connections[i].nodeFrom.type == 'output'
-                )
-                &&
-                (
-                    this.connections[i].nodeTo.type == 'input'
-                 || this.connections[i].nodeTo.type == 'output'
-                )
-            ) return true;
-
-            if (
                    this.connections[i].nodeFrom == node
                 || this.connections[i].nodeTo   == node
             ) return true;

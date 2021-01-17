@@ -23,7 +23,7 @@ class NeuroSimulator {
                 global : 0.8,
                 newValue : 0.1,
                 uniform  : 0.9,
-                uniformStandartVar : 0.05
+                uniformStandartVar : 0.1
             },
             connections : 0.3,
             nodes : 0.03
@@ -104,7 +104,6 @@ class NeuroSimulator {
             this.killUnfertileSpecies();
             // Mutations
             this.mutate();
-            noLoop();
 
             // New generation
             this.generationCount += 1;
