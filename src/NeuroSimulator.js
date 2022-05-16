@@ -326,7 +326,7 @@ class NeuroSimulator {
 
     copyLander(lander) {
         let newLander = new Lander(this, this.terrain, lander.controler.copy());
-        lander.controler.lander = newLander;
+        newLander.controler.lander = newLander;
 
         newLander.id = Math.round(random(100, 10000000)); // used for debug
         newLander.initialize(...this.initialConditions);

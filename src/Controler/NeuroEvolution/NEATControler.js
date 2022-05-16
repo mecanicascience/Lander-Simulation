@@ -24,19 +24,6 @@ class NEATControler {
 
         for (let i = 0; i < outputsSize; i++)
             this.newGene(1, (outputsSize - i - 1) * 2 / (outputsSize - 1) - 1, 'output');
-
-        if (random() > 0.5)
-            this.newConnection(this.getNode(0), this.getNode(10));
-        if (random() > 0.5)
-            this.newConnection(this.getNode(2), this.getNode(9));
-        if (random() > 0.5)
-            this.newConnection(this.getNode(5), this.getNode(7));
-        if (random() > 0.5)
-            this.newGene(random(-1, 1), random(-1, 1));
-        if (random() > 0.5)
-            this.newGene(random(-1, 1), random(-1, 1));
-        if (random() > 0.5)
-            this.newGene(random(-1, 1), random(-1, 1));
     }
 
 
