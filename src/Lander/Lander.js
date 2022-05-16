@@ -6,8 +6,8 @@ class Lander {
     */
     constructor(simulator, terrain, controler) {
         this.simulator = simulator;
-        this.terrain   = terrain;
-        this.engine    = new LanderEngine();
+        this.terrain = terrain;
+        this.engine = new LanderEngine();
         this.controler = controler;
 
         this.collided = false;
@@ -32,20 +32,20 @@ class Lander {
 
         this.pos = new Vector(r0.x, r0.y);
         this.vel = new Vector(v0.x, v0.y);
-        this.acc = new Vector(   0,    0);
+        this.acc = new Vector(0, 0);
 
         this.engine.initialize(thrustAngle0, thrustAmount0);
 
         this.forces = [];
         this.rigidbody = [
             new Vector(-1.3, 5),
-            new Vector( 1.3, 5),
-            new Vector( 1.3, -2.2),
+            new Vector(1.3, 5),
+            new Vector(1.3, -2.2),
             new Vector(-1.3, -2.2)
         ];
 
         this.collided = false;
-        this.points   = 0;
+        this.points = 0;
     }
 
     /**
@@ -152,15 +152,15 @@ class Lander {
     */
     intersectWithBoundaries() {
         let angle = {
-            cos : Math.cos(this.engine.thrustAngle),
-            sin : Math.sin(this.engine.thrustAngle),
+            cos: Math.cos(this.engine.thrustAngle),
+            sin: Math.sin(this.engine.thrustAngle),
         };
 
         // Sides Walls intersection
         for (let j = 0; j < this.rigidbody.length; j++) {
             let pos = {
-                x : angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
-                y : angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
+                x: angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
+                y: angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
             };
 
             let dim = _pSimulationInstance.config.engine.plotter.scale;
@@ -174,11 +174,11 @@ class Lander {
         for (let i = 0; i < this.terrain.points.length - 1; i++) {
             for (let j = 0; j < this.rigidbody.length; j++) {
                 let pos = {
-                    x : angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
-                    y : angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
+                    x: angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
+                    y: angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
                 };
                 let p1 = this.terrain.points[i];
-                let p2 = this.terrain.points[i+1];
+                let p2 = this.terrain.points[i + 1];
 
                 if (pos.x < p1.x || pos.x > p2.x)
                     continue;
@@ -201,31 +201,31 @@ class Lander {
         if (selected) {
             drawer
                 .stroke(240, 40, 40, 1)
-                .fill  (220,  50,  50, 1);
+                .fill(220, 50, 50, 1);
         }
         else {
             drawer
                 .stroke(255, 255, 255, 0.5)
-                .fill  (255, 255, 255, 0.3);
+                .fill(255, 255, 255, 0.3);
         }
 
         drawer.push()
-                .translate(this.pos.x, this.pos.y)
-                .rotate(this.engine.thrustAngle)
-                .scale(0.7)
+            .translate(this.pos.x, this.pos.y)
+            .rotate(this.engine.thrustAngle)
+            .scale(0.7)
 
-                // Lander
-                .beginShape()
-                    .vertex(-2, 0)
-                    .vertex(-3, 4)
-                    .vertex(-2, 7)
-                    .vertex( 2, 7)
-                    .vertex( 3, 4)
-                    .vertex( 2, 0)
-                .endShape()
+            // Lander
+            .beginShape()
+            .vertex(-2, 0)
+            .vertex(-3, 4)
+            .vertex(-2, 7)
+            .vertex(2, 7)
+            .vertex(3, 4)
+            .vertex(2, 0)
+            .endShape()
 
-                // LanderEngine
-                this.engine.draw(drawer, !this.collided);
+        // LanderEngine
+        this.engine.draw(drawer, !this.collided);
         drawer.pop();
     }
 
@@ -244,7 +244,7 @@ class Lander {
             .translate(this.pos.x, this.pos.y)
             .rotate(this.engine.thrustAngle);
         for (let i = 0; i < this.rigidbody.length; i++) {
-            let e = this.rigidbody[i+1];
+            let e = this.rigidbody[i + 1];
             if (e == undefined)
                 e = this.rigidbody[0];
 
@@ -259,18 +259,18 @@ class Lander {
 
         // Draw collision projection on the surface
         let angle = {
-            cos : Math.cos(this.engine.thrustAngle),
-            sin : Math.sin(this.engine.thrustAngle),
+            cos: Math.cos(this.engine.thrustAngle),
+            sin: Math.sin(this.engine.thrustAngle),
         };
 
         for (let i = 0; i < this.terrain.points.length - 1; i++) {
             for (let j = 0; j < this.rigidbody.length; j++) {
                 let pos = {
-                    x : angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
-                    y : angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
+                    x: angle.cos * this.rigidbody[j].x - angle.sin * this.rigidbody[j].y + this.pos.x,
+                    y: angle.sin * this.rigidbody[j].x + angle.cos * this.rigidbody[j].y + this.pos.y
                 };
                 let p1 = this.terrain.points[i];
-                let p2 = this.terrain.points[i+1];
+                let p2 = this.terrain.points[i + 1];
 
                 if (pos.x < p1.x || pos.x > p2.x)
                     continue;
@@ -304,7 +304,7 @@ class Lander {
     isUnder(mx, my, leftPoint, rightPoint) {
         if (mx < leftPoint.x || mx > rightPoint.x) // between the two x positions
             return false;
-        if(my < mx*(rightPoint.y - leftPoint.y)/(rightPoint.x - leftPoint.x) + leftPoint.y) // under the line
+        if (my < mx * (rightPoint.y - leftPoint.y) / (rightPoint.x - leftPoint.x) + leftPoint.y) // under the line
             return true;
     }
 
@@ -312,13 +312,13 @@ class Lander {
     /** @return A string representation of the lander, its controler and engine */
     stringify() {
         return JSON.stringify({
-            m : this.m,
-            r0 : this.r0,
-            v0 : this.v0,
-            thrustAngle0  : this.thrustAngle0,
-            thrustAmount0 : this.thrustAmount0,
-            controlerName : this.controler.constructor.name,
-            controler : this.controler.stringify()
+            m: this.m,
+            r0: this.r0,
+            v0: this.v0,
+            thrustAngle0: this.thrustAngle0,
+            thrustAmount0: this.thrustAmount0,
+            controlerName: this.controler.constructor.name,
+            controler: this.controler.stringify()
         });
     }
 }

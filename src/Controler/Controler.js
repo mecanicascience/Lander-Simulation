@@ -32,5 +32,5 @@ class Controler {
     }
 
     /** @return an object representation of this object */
-    stringify() { return { } }
+    stringify() { return {} }
 }

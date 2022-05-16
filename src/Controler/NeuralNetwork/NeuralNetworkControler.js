@@ -7,23 +7,23 @@ class NeuralNetworkControler extends Controler {
         super(simulator);
 
         // Using ReLU activation function f(x) = max(0, x)
-        let reLU_activationFunction    = x => x > 0 ? x : 0;
-        let sigmoid_activationFunction = x => 2 / (1 + Math.exp(-4.9*x)) - 1;
+        let reLU_activationFunction = x => x > 0 ? x : 0;
+        let sigmoid_activationFunction = x => 2 / (1 + Math.exp(-4.9 * x)) - 1;
         this.activationFunction = sigmoid_activationFunction;
 
         this.gaussianDistribution = {
-            mean : 0,
-            standard_deviation : 0.05
+            mean: 0,
+            standard_deviation: 0.05
         };
 
-        this.input_nodes  = 7 + simulator.terrain.describe().length;
+        this.input_nodes = 7 + simulator.terrain.describe().length;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = 4;
 
         this.nodes_datas = [
-            { max : 0, min : 0 }, // input_nodes supposed max and min values
-            { max : 0, min : 0 },      // hidden_nodes supposed max and min values
-            { max : 0, min : 0 }       // output_nodes supposed max and min values
+            { max: 0, min: 0 }, // input_nodes supposed max and min values
+            { max: 0, min: 0 },      // hidden_nodes supposed max and min values
+            { max: 0, min: 0 }       // output_nodes supposed max and min values
         ];
         this.lander = null;
 
@@ -87,9 +87,9 @@ class NeuralNetworkControler extends Controler {
 
         // Phenotype
         // [ rotationX, rotationY, thrustUp, thrustDown ]
-        this.lander.engine.rotate( prediction.get(0, 0));
+        this.lander.engine.rotate(prediction.get(0, 0));
         this.lander.engine.rotate(-prediction.get(1, 0));
-        this.lander.engine.thrust( prediction.get(2, 0));
+        this.lander.engine.thrust(prediction.get(2, 0));
         this.lander.engine.thrust(-prediction.get(3, 0));
     }
 
@@ -137,10 +137,10 @@ class NeuralNetworkControler extends Controler {
     /** @return an object representation of this object */
     stringify() {
         return {
-            input_nodes    : this.input_nodes,
-            hidden_nodes   : this.hidden_nodes,
-            output_nodes   : this.output_nodes,
-            neural_network : this.nn.stringify()
+            input_nodes: this.input_nodes,
+            hidden_nodes: this.hidden_nodes,
+            output_nodes: this.output_nodes,
+            neural_network: this.nn.stringify()
         };
     }
 }
