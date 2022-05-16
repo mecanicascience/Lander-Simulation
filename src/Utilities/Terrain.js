@@ -13,7 +13,7 @@ class Terrain {
         this.stars = [];
         for (let i = 0; i < 100; i++) {
             this.stars.push(new Vector(
-                Math.round(width  * random()),
+                Math.round(width * random()),
                 Math.round(height * random()),
                 random(2, 6)
             ));
@@ -63,21 +63,21 @@ class Terrain {
 
 
         drawer.beginShape();
-            drawer.vertex(-this.size.x, -0.6*this.size.y);
-            for (let i = 0; i < this.points.length; i++) {
-                // Terrain Ground
-                drawer
-                    .fill(30, 30, 30, 1)
-                    .stroke(255, 255, 255, 0.5)
-                    .vertex(this.points[i].x, this.points[i].y);
+        drawer.vertex(-this.size.x, -0.6 * this.size.y);
+        for (let i = 0; i < this.points.length; i++) {
+            // Terrain Ground
+            drawer
+                .fill(30, 30, 30, 1)
+                .stroke(255, 255, 255, 0.5)
+                .vertex(this.points[i].x, this.points[i].y);
 
-                // Terrain Surface Ellipses
-                // drawer
-                //     .fill(255, 255, 255, 0.2)
-                //     .stroke(255, 255, 255, 0.8)
-                //     .circle(this.points[i].x, this.points[i].y, 5, true);
-            }
-            drawer.vertex(this.size.x, -0.6*this.size.y);
+            // Terrain Surface Ellipses
+            // drawer
+            //     .fill(255, 255, 255, 0.2)
+            //     .stroke(255, 255, 255, 0.8)
+            //     .circle(this.points[i].x, this.points[i].y, 5, true);
+        }
+        drawer.vertex(this.size.x, -0.6 * this.size.y);
         drawer.endShape(CLOSE);
     }
 }

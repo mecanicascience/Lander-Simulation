@@ -1,67 +1,69 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<title>Lander Simulation</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<style>
-			body {
-				margin: 0;
-				background-color: black;
-				color: white;
-				font-family: "Segoe UI", Arial, sans-serif !important;
-			}
+	<title>Lander Simulation</title>
 
-			#simulationContent {
-				text-align: center;
-			}
+	<style>
+		body {
+			margin: 0;
+			background-color: black;
+			color: white;
+			font-family: "Segoe UI", Arial, sans-serif !important;
+		}
 
-			.folder-name-tex {
-                width: max-content;
-            }
+		#simulationContent {
+			text-align: center;
+		}
 
-			.tp-rotv {
-                font-size: 14px !important;
-            }
-		</style>
+		.folder-name-tex {
+			width: max-content;
+		}
 
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
-		<script type="text/javascript" src="https://psengine.mecanicascience.fr/versions/3.1.2/pSEngine.min.js"></script>
-		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tweakpane@1.5.7/dist/tweakpane.min.js"></script>
+		.tp-rotv {
+			font-size: 14px !important;
+		}
+	</style>
 
-		<script src="src/sketch.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
+	<script type="text/javascript" src="https://psengine.mecanicascience.fr/versions/3.1.2/pSEngine.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tweakpane@1.5.7/dist/tweakpane.min.js"></script>
 
-
-		<script src="src/Simulator.js"></script>
-		<script src="src/NeuroSimulator.js"></script>
+	<script src="src/sketch.js"></script>
 
 
-		<script src="src/Lander/Lander.js"></script>
-		<script src="src/Lander/LanderEngine.js"></script>
+	<script src="src/Simulator.js"></script>
+	<script src="src/NeuroSimulator.js"></script>
 
 
-		<script src="src/Controler/Controler.js"></script>
-		<script src="src/Controler/HumanControler.js"></script>
-
-		<script src="src/Controler/NeuroEvolution/NEATControler.js"></script>
-		<script src="src/Controler/NeuroEvolution/NEATNode.js"></script>
-		<script src="src/Controler/NeuroEvolution/NEATConnection.js"></script>
-
-		<script src="src/Controler/NeuralNetwork/NeuralNetworkControler.js"></script>
-		<script src="src/Controler/NeuralNetwork/NeuralNetwork.js"></script>
+	<script src="src/Lander/Lander.js"></script>
+	<script src="src/Lander/LanderEngine.js"></script>
 
 
-		<script src="src/Utilities/Terrain.js"></script>
-		<script src="src/Utilities/Matrix.js"></script>
-		<script src="src/Utilities/OptionsGUI.js"></script>
-		<script src="src/Utilities/FitnessDrawer.js"></script>
-	</head>
+	<script src="src/Controler/Controler.js"></script>
+	<script src="src/Controler/HumanControler.js"></script>
 
-	<body>
-		<div id="simulationContent">
-		</div>
-	</body>
+	<script src="src/Controler/NeuroEvolution/NEATControler.js"></script>
+	<script src="src/Controler/NeuroEvolution/NEATNode.js"></script>
+	<script src="src/Controler/NeuroEvolution/NEATConnection.js"></script>
+
+	<script src="src/Controler/NeuralNetwork/NeuralNetworkControler.js"></script>
+	<script src="src/Controler/NeuralNetwork/NeuralNetwork.js"></script>
+
+
+	<script src="src/Utilities/Terrain.js"></script>
+	<script src="src/Utilities/Matrix.js"></script>
+	<script src="src/Utilities/OptionsGUI.js"></script>
+	<script src="src/Utilities/FitnessDrawer.js"></script>
+</head>
+
+<body>
+	<div id="simulationContent">
+	</div>
+</body>
+
 </html>

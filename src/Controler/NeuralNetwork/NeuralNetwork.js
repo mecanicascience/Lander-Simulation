@@ -7,7 +7,7 @@ class NeuralNetwork {
     * @param activationFunction The activation function of the NeuralNetwork
     */
     constructor(input_nodes, hidden_nodes, output_nodes, activationFunction, nodes_datas) {
-        this.input_nodes  = input_nodes;
+        this.input_nodes = input_nodes;
         this.hidden_nodes = hidden_nodes;
         this.output_nodes = output_nodes;
 
@@ -17,13 +17,13 @@ class NeuralNetwork {
         this.ih_bias = new Matrix(this.hidden_nodes, 1);
         this.ho_bias = new Matrix(this.output_nodes, 1);
 
-        this.weights_datas = { max : 0, min : 0 };
+        this.weights_datas = { max: 0, min: 0 };
         this.nodes_datas = nodes_datas;
         if (nodes_datas == undefined)
             this.nodes_datas = [
-                { max : 0, min : 0 }, // input_nodes
-                { max : 0, min : 0 }, // hidden_nodes
-                { max : 0, min : 0 } // output_nodes
+                { max: 0, min: 0 }, // input_nodes
+                { max: 0, min: 0 }, // hidden_nodes
+                { max: 0, min: 0 } // output_nodes
             ];
 
         this.activationFunction = activationFunction;
@@ -41,7 +41,7 @@ class NeuralNetwork {
     initialize(mode, ...args) {
         if (mode == 'random') {
             let min = (args[0] == undefined ? -1 : args[0]);
-            let max = (args[1] == undefined ?  1 : args[1]);
+            let max = (args[1] == undefined ? 1 : args[1]);
 
             this.ih_weights.randomize(min, max);
             this.ho_weights.randomize(min, max);
@@ -92,13 +92,13 @@ class NeuralNetwork {
     * @return The ouput array predicted
     */
     predict(input_arr) {
-        this.a_0        = Matrix.fromArray(input_arr);
+        this.a_0 = Matrix.fromArray(input_arr);
 
         let z_matrix_1 = Matrix.mult(this.ih_weights, this.a_0).add(this.ih_bias);
-        this.a_1        = this.activate(z_matrix_1);
+        this.a_1 = this.activate(z_matrix_1);
 
         let z_matrix_2 = Matrix.mult(this.ho_weights, this.a_1).add(this.ho_bias);
-        this.a_2        = this.activate(z_matrix_2);
+        this.a_2 = this.activate(z_matrix_2);
 
         this.updateNodesDatas();
 
@@ -127,8 +127,8 @@ class NeuralNetwork {
         let nodes_datas = [];
         for (let i = 0; i < parent1.nodes_datas.length; i++) {
             nodes_datas.push({
-                max : Math.max(parent1.nodes_datas[i].max, parent2.nodes_datas[i].max),
-                min : Math.min(parent1.nodes_datas[i].min, parent2.nodes_datas[i].min)
+                max: Math.max(parent1.nodes_datas[i].max, parent2.nodes_datas[i].max),
+                min: Math.min(parent1.nodes_datas[i].min, parent2.nodes_datas[i].min)
             });
         }
 
@@ -189,7 +189,7 @@ class NeuralNetwork {
     draw(drawer) {
         let s = _pSimulationInstance.config.engine.plotter.scale;
         let o = _pSimulationInstance.config.engine.plotter.offset;
-        let maxNodes   = Math.max(this.input_nodes, this.hidden_nodes, this.output_nodes);
+        let maxNodes = Math.max(this.input_nodes, this.hidden_nodes, this.output_nodes);
         let deltaSpace = new Vector(0.3 * s.x, 0.8 * s.y);
 
         for (let i = 0; i < 3; i++) { // column
@@ -197,7 +197,7 @@ class NeuralNetwork {
             let m = (i == 1 ? this.hidden_nodes : (i == 2 ? this.output_nodes : this.input_nodes));
 
             for (let j = 0; j < m; j++) { // row
-                let y = (m-j-1) * (s.y - deltaSpace.y/2)/(m-1) + o.y - deltaSpace.y/3;
+                let y = (m - j - 1) * (s.y - deltaSpace.y / 2) / (m - 1) + o.y - deltaSpace.y / 3;
 
                 // Cell
                 let cellCol = (i == 1 ? this.a_1 : (i == 2 ? this.a_2 : this.a_0));
@@ -226,7 +226,7 @@ class NeuralNetwork {
                         let nm = this.hidden_nodes;
 
                         let nx = -(s.x - deltaSpace.x) + 1 * (s.x - deltaSpace.x) + o.x;
-                        let ny = k * (s.y - deltaSpace.y/2)/(nm-1) + o.y - deltaSpace.y/3;
+                        let ny = k * (s.y - deltaSpace.y / 2) / (nm - 1) + o.y - deltaSpace.y / 3;
 
                         drawer
                             .stroke(mVal)
@@ -240,7 +240,7 @@ class NeuralNetwork {
                         let nm = this.output_nodes;
 
                         let nx = -(s.x - deltaSpace.x) + 2 * (s.x - deltaSpace.x) + o.x;
-                        let ny = k * (s.y - deltaSpace.y/2)/(nm-1) + o.y - deltaSpace.y/3;
+                        let ny = k * (s.y - deltaSpace.y / 2) / (nm - 1) + o.y - deltaSpace.y / 3;
 
                         drawer
                             .stroke(mVal)
@@ -259,12 +259,12 @@ class NeuralNetwork {
     */
     getWeightColor(w) {
         let normalizedWeight =
-              (w - this.weights_datas.min)
+            (w - this.weights_datas.min)
             / (this.weights_datas.max - this.weights_datas.min);
 
         if (normalizedWeight > 0.5)
-            return `rgba(0, ${Math.round(2*(normalizedWeight - 0.5)*255)}, 0, 1)`;
-        return `rgba(${Math.round(2*normalizedWeight*255)}, 0, 0, 1)`;
+            return `rgba(0, ${Math.round(2 * (normalizedWeight - 0.5) * 255)}, 0, 1)`;
+        return `rgba(${Math.round(2 * normalizedWeight * 255)}, 0, 0, 1)`;
     }
 
     /**
@@ -296,11 +296,11 @@ class NeuralNetwork {
     */
     updateWeightDatas() {
         this.weights_datas = {
-            max : Math.max(
+            max: Math.max(
                 this.ih_weights.max(), this.ho_weights.max(),
                 this.ih_bias.max(), this.ho_bias.max()
             ),
-            min : Math.min(
+            min: Math.min(
                 this.ih_weights.min(), this.ho_weights.min(),
                 this.ih_bias.min(), this.ho_bias.min()
             )
@@ -312,22 +312,22 @@ class NeuralNetwork {
     */
     updateNodesDatas() {
         let n0 = {
-            max : [ this.nodes_datas[0].max, this.a_0.max() ],
-            min : [ this.nodes_datas[0].min, this.a_0.min() ]
+            max: [this.nodes_datas[0].max, this.a_0.max()],
+            min: [this.nodes_datas[0].min, this.a_0.min()]
         };
         let n1 = {
-            max : [ this.nodes_datas[1].max, this.a_1.max() ],
-            min : [ this.nodes_datas[1].min, this.a_1.min() ]
+            max: [this.nodes_datas[1].max, this.a_1.max()],
+            min: [this.nodes_datas[1].min, this.a_1.min()]
         };
         let n2 = {
-            max : [ this.nodes_datas[2].max, this.a_2.max() ],
-            min : [ this.nodes_datas[2].min, this.a_2.min() ]
+            max: [this.nodes_datas[2].max, this.a_2.max()],
+            min: [this.nodes_datas[2].min, this.a_2.min()]
         };
 
         this.nodes_datas = [
-            { max : Math.max(...n0.max), min : Math.min(...n0.min) }, // input_nodes
-            { max : Math.max(...n1.max), min : Math.min(...n1.min) }, // hidden_nodes
-            { max : Math.max(...n2.max), min : Math.min(...n2.min) }  // output_nodes
+            { max: Math.max(...n0.max), min: Math.min(...n0.min) }, // input_nodes
+            { max: Math.max(...n1.max), min: Math.min(...n1.min) }, // hidden_nodes
+            { max: Math.max(...n2.max), min: Math.min(...n2.min) }  // output_nodes
         ];
     }
 
@@ -336,14 +336,14 @@ class NeuralNetwork {
     */
     stringify() {
         return {
-            ih_weights : this.ih_weights.stringify(),
-            ho_weights : this.ho_weights.stringify(),
-            ih_bias    : this.ih_bias.stringify(),
-            ho_bias    : this.ho_bias.stringify(),
-            weights_datas : this.weights_datas,
-            input_nodes   : this.input_nodes,
-            hidden_nodes  : this.hidden_nodes,
-            output_nodes  : this.output_nodes
+            ih_weights: this.ih_weights.stringify(),
+            ho_weights: this.ho_weights.stringify(),
+            ih_bias: this.ih_bias.stringify(),
+            ho_bias: this.ho_bias.stringify(),
+            weights_datas: this.weights_datas,
+            input_nodes: this.input_nodes,
+            hidden_nodes: this.hidden_nodes,
+            output_nodes: this.output_nodes
         };
     }
 }

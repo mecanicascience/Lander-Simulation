@@ -1,29 +1,38 @@
 class Simulator {
     /** The main controler of the simulation */
-    constructor(initialConditions, terrainPrecision) {
+    constructor(initialConditions, terrainPrecision, mode) {
         this.shouldDrawState = true;
-        this.pauseState      = true;
+        this.pauseState = true;
         this.showDebugOutput = false;
+        this.mode = mode;
 
         this.terrain = new Terrain(terrainPrecision);
         this.terrain.generate();
 
         this.fitnessDrawer = new FitnessDrawer(this);
 
-        this.landers     = [];
+        this.landers = [];
         this.displayType = {};
+        this.displayType.type = 'vessel';
 
         this.initialConditions = initialConditions;
 
         // 'neuroEvolution' / 'neuralNetwork' for generative neural network, 'player' for a player mode
-        this.simulationMode = 'neuroEvolution';
-        this.neuralNetworkGeneration = 0;
+        if (this.mode == "jsonNN" || this.mode == "NN")
+            this.simulationMode = 'neuralNetwork';
+        else if (this.mode == "NE")
+            this.simulationMode = 'neuroEvolution';
+
+        if (this.mode != "jsonNN")
+            this.neuralNetworkGeneration = 0;
+        else
+            this.neuralNetworkGeneration = 1845;
 
         this.gui = new OptionsGUI();
     }
 
     getInitialAngle() {
-        return random(-Math.PI/4, Math.PI/4);
+        return random(-Math.PI / 4, Math.PI / 4);
     }
 
     /** Initialize the controler after the other elements */
@@ -31,7 +40,7 @@ class Simulator {
         if (this.simulationMode == 'neuralNetwork') {
             let nnControlersCount = 0;
             for (let i = 0; i < this.landers.length; i++) {
-                 if (this.landers[i].controler instanceof NeuralNetworkControler)
+                if (this.landers[i].controler instanceof NeuralNetworkControler)
                     nnControlersCount += 1;
             }
             if (nnControlersCount <= 2)
@@ -39,7 +48,10 @@ class Simulator {
         }
 
         this.hasVesselCollided = false;
-        this.neuralNetworkGeneration = 1;
+        if (this.mode != "jsonNN")
+            this.neuralNetworkGeneration = 1;
+        else
+            this.neuralNetworkGeneration = 1846;
         this.updateCallNumber = 0;
         this.fitnessStats = [];
         this.resetGUI();
@@ -57,8 +69,8 @@ class Simulator {
 
         let finished = true;
         for (let i = 0; i < this.landers.length; i++) {
-             this.landers[i].update(dt);
-             if (!this.landers[i].collided && this.landers[i].controler instanceof NeuralNetworkControler)
+            this.landers[i].update(dt);
+            if (!this.landers[i].collided && this.landers[i].controler instanceof NeuralNetworkControler)
                 finished = false;
         }
 
@@ -100,13 +112,25 @@ class Simulator {
     /** Resets the GUI */
     resetGUI() {
         this.gui.reset();
-        this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration + '');
-        this.gui.addLabel('\\text{Update FPS}', Math.round(1/_pSimulationInstance.dtMoy) + '');
+        this.gui.addButton("\\text{See generation 1846}", () => {
+            buttonClickedBestGen = true;
+            launchSimulation();
+        });
+        this.gui.addButton("\\text{Restart with empty configuration}", () => {
+            buttonClickedBestGen = false;
+            launchSimulation();
+        });
+
+        this.gui.addLabel('\\text{Generation}', this.neuralNetworkGeneration);
+        if (debug)
+            this.gui.addLabel('\\text{Update FPS}', Math.round(1 / _pSimulationInstance.dtMoy) + '');
         this.simSpeedLab = this.gui.addInput('\\text{Sim speed}', simulationSpeed, 1, 20);
+
+        let corrInt = (this.displayType.type == 'vessel' ? 0 : (this.displayType.type == 'controler' ? 1 : 2));
         this.gui.addList(
             '\\text{Mode}',
-            { 'Simulation' : 0, 'Controler' : 1, 'Fitness' : 2 },
-            0, this.gui.datas.configuration,
+            { 'Simulation': 0, 'Controler': 1, 'Fitness': 2 },
+            corrInt, this.gui.datas.configuration,
             (val) => sim.displays(val ? (val == 1 ? 'controler' : 'fitness') : 'vessel', 0)
         );
         this.gui.addInput(
@@ -115,21 +139,24 @@ class Simulator {
             (val) => {
                 sim.displayType.id = val;
                 sim.displays(this.displayType.type, Math.round(val));
-            }
+            },
+            1
         );
         this.gui.addCheckbox(
             '\\text{Pause}', false,
             (val) => val ? sim.pause() : sim.play()
         );
 
-        this.gui.addCheckbox(
-            '\\text{Graphisms}', this.shouldDrawState,
-            (val) => sim.shouldDraw(val)
-        );
-        this.gui.addCheckbox(
-            '\\text{Debug Logs}', this.showDebugOutput,
-            (val) => sim.showDebugOutput = val
-        );
+        if (debug) {
+            this.gui.addCheckbox(
+                '\\text{Enable Graphisms}', this.shouldDrawState,
+                (val) => sim.shouldDraw(val)
+            );
+            this.gui.addCheckbox(
+                '\\text{Show Debug Logs}', this.showDebugOutput,
+                (val) => sim.showDebugOutput = val
+            );
+        }
     }
 
 
@@ -143,14 +170,14 @@ class Simulator {
 
         // Calculate fitness of the population
         let fitness = curPop.map(el => el.controler.estimateFitness());
-        let fitnessDatas = { min : Math.min(...fitness), max : Math.max(...fitness) };
+        let fitnessDatas = { min: Math.min(...fitness), max: Math.max(...fitness) };
         let fitSum = fitness.reduce((a, b) => a + b, 0);
 
         let fitnessMoy = fitSum / curPop.length;
         this.fitnessStats.push({
-            min : fitnessDatas.min,
-            max : fitnessDatas.max,
-            moy : fitnessMoy
+            min: fitnessDatas.min,
+            max: fitnessDatas.max,
+            moy: fitnessMoy
         });
 
 
@@ -163,12 +190,12 @@ class Simulator {
 
         let fitnessNormalized = fitness.map(el => el / fitSum);
         this.debugLog(`Selected Vessel ${this.displayType.id} has a raw fitness of ${Math.round(fitness[this.displayType.id])}`
-            + `, that counts as ${Math.round(fitnessNormalized[this.displayType.id]*100)}% of total fitness.`);
+            + `, that counts as ${Math.round(fitnessNormalized[this.displayType.id] * 100)}% of total fitness.`);
 
 
 
         // Sum each values as a probabilistic matingpool [x0, x0 + x1, x0 + x1 + x2, ...]
-        let matingPoolProbas = [ fitnessNormalized[0] ];
+        let matingPoolProbas = [fitnessNormalized[0]];
         for (let i = 1; i < fitnessNormalized.length; i++)
             matingPoolProbas[i] = matingPoolProbas[i - 1] + fitnessNormalized[i];
 
@@ -182,7 +209,7 @@ class Simulator {
             while (r > matingPoolProbas[j])
                 j++;
 
-             // Parent can not reproduce themselfs alone
+            // Parent can not reproduce themselfs alone
             if (i % 2 == 1 && newPopIDs[i - 1] == j)
                 i -= 1;
             else {
@@ -194,17 +221,17 @@ class Simulator {
             }
         }
         this.debugLog(`Selected Vessel ${this.displayType.id} will have ${selectedVesselChildren}/`
-            + `${newPopIDs.length/2} (${Math.round(selectedVesselChildren/newPopIDs.length/2*100)}%) children with :`);
+            + `${newPopIDs.length / 2} (${Math.round(selectedVesselChildren / newPopIDs.length / 2 * 100)}%) children with :`);
         for (let i = 0; i < selectedVesselChildrenPar.length; i++) {
             let id = selectedVesselChildrenPar[i];
             this.debugLog(`  - Vessel ${id} of fitness ${Math.round(fitness[id])}`
-                + ` (${Math.round(fitnessNormalized[id]*100)}%)`);
+                + ` (${Math.round(fitnessNormalized[id] * 100)}%)`);
         }
 
         // Generate and mutate new population
         let newPop = [];
         for (let i = 1; i < newPopIDs.length; i += 2) {
-            let p1 = curPop[newPopIDs[i-1]];
+            let p1 = curPop[newPopIDs[i - 1]];
             let p2 = curPop[newPopIDs[i]];
 
             // Crossover between p1 and p2
@@ -247,14 +274,14 @@ class Simulator {
 
 
     /** Pause the simulation */
-    pause() { this.pauseState = true;  }
+    pause() { this.pauseState = true; }
 
     /** Plays the simulation */
-    play()  { this.pauseState = false; }
+    play() { this.pauseState = false; }
 
     /** Displays or hide the graphisms */
     shouldDraw(val) {
-    	this.shouldDrawState = val;
+        this.shouldDrawState = val;
     }
 
     debugLog(el) {
@@ -269,7 +296,7 @@ class Simulator {
     * @param id If type is 'controler', the id of the controler to be shown
     */
     displays(type, id = 0) {
-        this.displayType = { type : type, id : id };
+        this.displayType = { type: type, id: id };
     }
 
 
@@ -340,7 +367,7 @@ class Simulator {
 
     /** @return a String representation of the current Lander population */
     savePopulation() {
-        let res = [ ];
+        let res = [];
         for (let i = 0; i < this.landers.length; i++)
             res.push(this.landers[i].stringify());
         let jsonStr = JSON.stringify(res);

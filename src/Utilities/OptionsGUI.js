@@ -13,7 +13,7 @@ class OptionsGUI {
 
     /** Creates a new pane */
     newPane() {
-        this.pane  = new Tweakpane();
+        this.pane = new Tweakpane();
         this.datas = {};
         this.addFolder('\\text{Configuration}', 'root', 'configuration');
     }
@@ -33,9 +33,9 @@ class OptionsGUI {
 
         let folder = (parent == this.datas ? this.pane : parent._folder).addFolder({ title, hidden });
         parent[storedName] = {
-            _params : { },
-            _values : { },
-            _folder : folder
+            _params: {},
+            _values: {},
+            _folder: folder
         };
 
         this.processHTMLLaTeX(folder.controller.view.elem_.children[0], 'folder');
@@ -68,11 +68,11 @@ class OptionsGUI {
     * @param callback     OnChange callback
     * @return A function that returns the current value of the input
     */
-    addInput(name, defaultValue = 0, minValue = 0, maxValue = 10, folder = this.datas.configuration, callback) {
+    addInput(name, defaultValue = 0, minValue = 0, maxValue = 10, folder = this.datas.configuration, callback, step=null) {
         folder._params[name] = defaultValue;
         folder._values[name] = defaultValue;
         let newInput = folder._folder
-            .addInput(folder._params, name, { min : minValue, max : maxValue })
+            .addInput(folder._params, name, { min: minValue, max: maxValue, step: step })
             .on('change', (value) => {
                 folder._values[name] = value;
 
@@ -95,7 +95,7 @@ class OptionsGUI {
     */
     addButton(name, callback, folder = this.datas.configuration) {
         let newInput = folder._folder
-            .addButton({ title : name })
+            .addButton({ title: name })
             .on('click', () => callback());
 
         if (this.usesMathJax)
@@ -135,7 +135,7 @@ class OptionsGUI {
         folder._params[name] = defaultValue;
         folder._values[name] = defaultValue;
         let newInput = folder._folder
-            .addInput(folder._params, name, { options : values })
+            .addInput(folder._params, name, { options: values })
             .on('change', (value) => {
                 folder._values[name] = value;
                 if (callback)
@@ -179,7 +179,7 @@ class OptionsGUI {
             htmlElement.innerHTML = MathJax.tex2mml(htmlElement.innerHTML);
         else if (type == 'folder')
             htmlElement.innerHTML =
-                  '<div class="folder-name-tex">' + MathJax.tex2mml(htmlElement.firstChild.data) + '</div>'
+                '<div class="folder-name-tex">' + MathJax.tex2mml(htmlElement.firstChild.data) + '</div>'
                 + '<div class="tp-fldv_m"></div>';
     }
 }

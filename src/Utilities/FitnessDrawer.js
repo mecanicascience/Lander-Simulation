@@ -22,19 +22,19 @@ class FitnessDrawer {
 
         // Draw Graph
         let fac = 0.05;
-        let sx = 2*s.x/(globalMax*fac);
-        let sy = 2*s.y/(globalMax*fac);
+        let sx = 2 * s.x / (globalMax * fac);
+        let sy = 2 * s.y / (globalMax * fac);
 
         drawer
             .push()
             .translate(-s.x, o.y - s.y)
             .stroke(255)
             .strokeWeight(2)
-            .line(0, 0, sx*(globalMax*fac), 0)
-            .line(0, 0, 0, sy*(globalMax*fac));
+            .line(0, 0, sx * (globalMax * fac), 0)
+            .line(0, 0, 0, sy * (globalMax * fac));
         for (let i = 2; i < stats.length; i++) {
-            let x = (i - 1) / (generationCount - 2) * sx*(globalMax*fac);
-            drawer.line(x, -sy*(globalMax*fac)*0.01, x, sy*(globalMax*fac)*0.01);
+            let x = (i - 1) / (generationCount - 2) * sx * (globalMax * fac);
+            drawer.line(x, -sy * (globalMax * fac) * 0.01, x, sy * (globalMax * fac) * 0.01);
         }
 
         // Draw Datas
@@ -43,11 +43,11 @@ class FitnessDrawer {
         let yUnit = sy;
         for (let i = 0; i < stats.length; i++) {
             let d = stats[i];
-            let x = (i - 1) / (generationCount - 2) * sx*(globalMax*fac);
+            let x = (i - 1) / (generationCount - 2) * sx * (globalMax * fac);
             let pos = [
-                { x : x, y : d.max / globalMax * sy*(globalMax*fac) },
-                { x : x, y : d.min / globalMax * sy*(globalMax*fac) },
-                { x : x, y : d.moy / globalMax * sy*(globalMax*fac) }
+                { x: x, y: d.max / globalMax * sy * (globalMax * fac) },
+                { x: x, y: d.min / globalMax * sy * (globalMax * fac) },
+                { x: x, y: d.moy / globalMax * sy * (globalMax * fac) }
             ];
 
             if (i > 1)
