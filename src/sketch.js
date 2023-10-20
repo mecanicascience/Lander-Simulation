@@ -12,11 +12,11 @@ let debug = false;
 let buttonClickedBestGen = false;
 let mutationRate = 0.1;
 let simulationSpeed = 1; // min = 1
-let populationSize = 100;
+let populationSize = 10;
 
 // Mode
 let simMode = "jsonNN"; // Mode (jsonNN : load json data from previous network / NN : Neural Network / NE : Neural Evolution)
-let addHuman = false; // True : add a human controler (only works in NN mode)
+let addHuman = true; // True : add a human controler (only works in NN mode)
 
 
 
@@ -43,7 +43,7 @@ function launchSimulation() {
 	let controlersDatasNE = Array(populationSize);
 
 	// Last controler is an Human
-	if (addHuman && simMode == "NN") {
+	if (addHuman) {
 		controlersNN.push(HumanControler);
 		controlersDatasNN.push([]);
 		populationSize += 1;
